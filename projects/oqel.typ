@@ -5,11 +5,13 @@
 // This file describes what Oqel IS, not how to present it on a resume.
 
 #let oqel = (
-  title:       "Oqel",
-  role:        "Founding Engineer",
-  type:        "Product",
-  status:      "Active",
-  period:      "2024 — Present",
+  title:      "Oqel",
+  role:       "Founding Engineer",
+  company:    "Oqel",
+  type:       "Product",
+  status:     "Active",
+  period:     "2024 — Present",
+  team_size:  "Solo",
 
   summary: "An AI-powered visual perception analysis system that evaluates outfit images and generates structured styling reports. Oqel does not score beauty — it analyzes presence: posture, grooming, clothing coordination, silhouette structure, and color relationships that form first impressions in specific social contexts.",
 

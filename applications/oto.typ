@@ -18,6 +18,7 @@
 #import "../content/experience.typ": experience
 #import "../content/education.typ":  education
 #import "../content/languages.typ":  languages
+#import "../content/skills.typ":     skills
 
 // ── Import project layer ────────────────────────────────────────────
 #import "../projects/lintu.typ":   lintu
@@ -46,16 +47,8 @@
   education:  education,
   languages:  languages,
 
-  // Skills surfaced for this application.
-  // Drawn from real project technologies — not invented.
-  skills: (
-    (category: "Languages",   items: ("TypeScript", "JavaScript", "HTML", "CSS")),
-    (category: "Frameworks",  items: ("React", "Next.js", "TanStack Router", "TanStack Start")),
-    (category: "Visualization", items: ("D3.js", "WebGL", "Three.js", "Custom Shaders")),
-    (category: "State & Data", items: ("Zustand", "Jotai", "Zod", "Prisma")),
-    (category: "Tooling",     items: ("Vite", "pnpm", "Fastify", "PostgreSQL")),
-    (category: "AI",          items: ("Google Gemini", "Structured LLM Output", "Reasoning Pipelines")),
-  ),
+  // Skills loaded from content/skills.typ
+  skills: skills,
 )
 
 // ── Pass to the resume template ─────────────────────────────────────

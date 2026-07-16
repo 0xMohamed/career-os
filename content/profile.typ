@@ -6,12 +6,16 @@
 // Used by: applications, templates
 
 #let profile = (
-  name:     "Seoudy",
+  name:     "Mohamed Seoudy",
   title:    "Senior Frontend Engineer",
   location: "Remote",
-  email:    "hello@seoudy.com",
-  website:  "seoudy.com",
-  github:   "github.com/seoudy",
+
+  // Contact — full URLs without protocol prefix.
+  // Templates add mailto:/https:// as needed.
+  email:    "me@seoudy.dev",
+  website:  "seoudy.dev",
+  github:   "github.com/0xMohamed",
+  linkedin: "linkedin.com/in/0xmohamed",
 
   // A concise professional summary.
   // Applications may override this for specific job families.

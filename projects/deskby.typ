@@ -7,9 +7,11 @@
 #let deskby = (
   title:       "Deskby",
   role:        "Frontend Engineer",
+  company:     "Deskby",
   type:        "Product",
   status:      "Completed",
   period:      "2022 — 2023",
+  team_size:   "1–3",
 
   summary: "A widget-based ambient dashboard focused on glanceable, calm information display. Deskby provides a canvas of customizable widgets — weather, clocks, news, crypto, Spotify, prayer times, and more — with a strict separation between Edit Mode (interactive chrome) and View Mode (ambient, non-interactive display).",
 
@@ -19,7 +21,7 @@
   ),
 
   achievements: (
-    "Designed and built the settings schema system: a declarative per-instance configuration layer that renders settings UI automatically from widget definitions, with no bespoke UI per widget.",
+    "Design and built the settings schema system: a declarative per-instance configuration layer that renders settings UI automatically from widget definitions, with no bespoke UI per widget.",
     "Implemented fullscreen reparenting — widgets transition into a fullscreen overlay while preserving all component state, avoiding remount and state loss.",
     "Established the Edit vs View mode architecture: Edit Mode exposes full chrome (ControlBar, Toolbar, Shelf, widget headers); View Mode keeps the canvas ambient and non-interactive.",
     "Built the ControlBar hover-reveal system: a thin top-edge bar activates on hover, sliding the ControlBar in from above the viewport with pointer-events constrained so widgets remain interactive underneath.",
@@ -28,5 +30,7 @@
 
   tags: ("ambient-computing", "product", "frontend", "ux-engineering"),
 
-  links: (),
+  links: (
+    github: "github.com/0xMohamed/deskby",
+  ),
 )

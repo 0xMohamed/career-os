@@ -23,6 +23,7 @@ const REQUIRED_FILES = [
   "content/experience.typ",
   "content/education.typ",
   "content/languages.typ",
+  "content/skills.typ",
   // Project layer
   "projects/lintu.typ",
   "projects/modra.typ",

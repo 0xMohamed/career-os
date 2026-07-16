@@ -5,11 +5,13 @@
 // This file describes what Modra IS, not how to present it on a resume.
 
 #let modra = (
-  title:       "Modra",
-  role:        "Founding Engineer",
-  type:        "Product",
-  status:      "Active",
-  period:      "2024 — Present",
+  title:      "Modra",
+  role:       "Founding Engineer",
+  company:    "Modra",
+  type:       "Product",
+  status:     "Active",
+  period:     "2024 — Present",
+  team_size:  "2–4",
 
   summary: "A collaborative slide-deck builder focused on data visualization. Users create multi-slide presentations containing rich visual blocks — charts, maps, tables, text, images, and AI-generated insights — all driven by uploaded datasets. Documents can be shared publicly, presented in full-screen mode, or exported for review.",
 

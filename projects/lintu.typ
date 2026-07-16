@@ -7,11 +7,13 @@
 // consume this structured data and render it appropriately.
 
 #let lintu = (
-  title:       "Lintu",
-  role:        "Lead Frontend Engineer",
-  type:        "Product",
-  status:      "Active",
-  period:      "2023 — Present",
+  title:      "Lintu",
+  role:       "Lead Frontend Engineer",
+  company:    "Lintu",
+  type:       "Product",
+  status:     "Active",
+  period:     "2023 — Present",
+  team_size:  "2–5",
 
   summary: "A collaborative data visualization platform where users create multi-slide presentations composed of charts, maps, tables, and AI-generated insights — all driven by uploaded datasets. Designed for analysts and non-technical teams who need to communicate data without writing code.",
 

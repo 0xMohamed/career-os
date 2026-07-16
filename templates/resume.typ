@@ -104,9 +104,12 @@
     // Right: contact info
     align(right + horizon)[
       #set text(font: font-sans, size: size-meta, fill: color-muted)
-      #p.email \
+      #link("mailto:" + p.email)[#text(fill: color-accent)[#p.email]] \
       #link("https://" + p.website)[#text(fill: color-accent)[#p.website]] \
       #link("https://" + p.github)[#text(fill: color-accent)[#p.github]] \
+      #if "linkedin" in p [
+        #link("https://" + p.linkedin)[#text(fill: color-accent)[#p.linkedin]] \
+      ]
       #p.location
     ],
   )
@@ -164,7 +167,23 @@
     grid(
       columns: (1fr, auto),
       grid.cell(align: left)[
-        #text(font: font-sans, size: size-body, weight: "semibold")[#proj.title]
+        #let target-link = none
+        #if "links" in proj and proj.links != none {
+          if "live" in proj.links and proj.links.live != none and proj.links.live != "" {
+            target-link = proj.links.live
+          } else if "github" in proj.links and proj.links.github != none and proj.links.github != "" {
+            target-link = proj.links.github
+          }
+        }
+        #if target-link != none {
+          let url = target-link
+          if not url.starts-with("http://") and not url.starts-with("https://") {
+            url = "https://" + url
+          }
+          link(url)[#text(font: font-sans, size: size-body, weight: "semibold", fill: color-accent)[#proj.title]]
+        } else {
+          text(font: font-sans, size: size-body, weight: "semibold")[#proj.title]
+        }
         #h(5pt)
         #text(font: font-sans, size: size-small, fill: color-muted)[#proj.role]
       ],

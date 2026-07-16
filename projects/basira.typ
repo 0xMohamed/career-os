@@ -7,9 +7,11 @@
 #let basira = (
   title:       "Basira",
   role:        "Creator & Engineer",
+  company:     "Basira",
   type:        "Open Source / Exploration",
   status:      "Active",
   period:      "2024 — Present",
+  team_size:   "Solo",
 
   summary: "A high-performance React application that visualizes massive interactive historical lineages on the web. Integrates D3 force layouts directly against React lifecycles to maintain 60 FPS with large graphs, featuring bilingual layouts (Arabic/English), semantic accessibility, and a premium motion design system.",
 
@@ -30,6 +32,6 @@
   tags: ("data-visualization", "performance", "accessibility", "open-source", "frontend"),
 
   links: (
-    github: "github.com/seoudy/basira",
+    github: "github.com/0xMohamed/basira",
   ),
 )
