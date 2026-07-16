@@ -31,5 +31,7 @@
 
   tags: ("ai", "data-visualization", "product", "frontend", "monorepo"),
 
-  links: (),
+  links: (
+    live: "usemodra.xyz",
+  ),
 )

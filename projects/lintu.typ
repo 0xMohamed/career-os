@@ -33,6 +33,6 @@
   tags: ("data-visualization", "product", "frontend", "editor", "design-systems"),
 
   links: (
-    live: "lintu.io",
+    live: "stories.lintu.io",
   ),
 )

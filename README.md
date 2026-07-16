@@ -28,7 +28,7 @@ The system is organized as a layered pipeline. Dependencies only flow downward.
 ```
 projects/    ←  Reusable professional assets (what each project IS)
     ↓
-content/     ←  Personal information (profile, experience, education, languages)
+content/     ←  Personal information (profile, experience, education, languages, skills)
     ↓
 profiles/    ←  Job family composition (inactive in Phase 1)
     ↓
@@ -43,8 +43,8 @@ output/      ←  Generated artifacts (resume.pdf)
 
 | Layer | Responsibility | Knows about |
 |---|---|---|
-| `projects/` | What each project IS | Technologies, achievements, links |
-| `content/` | Personal information | Profile, experience, education, languages |
+| `projects/` | What each project IS | Technologies, achievements, links, metadata |
+| `content/` | Personal information | Profile, experience, education, languages, skills |
 | `profiles/` | Job family composition (Phase 2) | Project ordering, skill emphasis |
 | `applications/` | Specific job application | Which content, which projects, which skills |
 | `templates/` | Rendering only | Receiving prepared data, visual layout |
@@ -56,9 +56,10 @@ output/      ←  Generated artifacts (resume.pdf)
 
 ```
 career/
-│
-├── README.md
-├── package.json
+├── README.md          # Project documentation
+├── CHANGELOG.md       # Release and version history
+├── LICENSE            # MIT License
+├── package.json       # Project version & script workflows
 │
 ├── projects/          # Reusable professional assets
 │   ├── lintu.typ
@@ -67,26 +68,27 @@ career/
 │   ├── basira.typ
 │   └── deskby.typ
 │
-├── content/           # Personal information
-│   ├── profile.typ
-│   ├── experience.typ
-│   ├── education.typ
-│   └── languages.typ
+├── content/           # Personal information (Single Source of Truth)
+│   ├── profile.typ    # Identity & contact details
+│   ├── experience.typ # Employment history & highlights
+│   ├── education.typ  # Academic background
+│   ├── languages.typ  # Language proficiencies
+│   └── skills.typ     # Technical skill categorization
 │
 ├── profiles/          # Job family composition (Phase 2)
 │   └── README.md
 │
 ├── applications/      # Specific job applications
-│   └── oto.typ
+│   └── oto.typ        # Active application entry point
 │
 ├── templates/         # Rendering engine
-│   ├── resume.typ
-│   └── theme.typ
+│   ├── resume.typ     # PDF layout template
+│   └── theme.typ      # Colors, typography & spacing tokens
 │
-├── scripts/           # Build tooling
-│   ├── build.js
-│   ├── watch.js
-│   └── lint.js
+├── scripts/           # Build & validation tooling
+│   ├── build.js       # Typst compile wrapper with --root setup
+│   ├── watch.js       # Live reloading typst watcher
+│   └── lint.js        # File presence & syntax validator
 │
 ├── assets/            # Static assets (avatars, logos)
 └── output/            # Generated artifacts (git-ignored)
@@ -167,10 +169,26 @@ pnpm clean
 ## How to Add a New Project
 
 1. Create `projects/your-project.typ`
-2. Follow the structure used in existing project files (title, role, summary, technologies, achievements, tags, links)
+2. Expose the structured dictionary following the enriched schema:
+   ```typst
+   #let your-project = (
+     title: "...",
+     role: "...",
+     company: "...",
+     type: "...",
+     status: "...",
+     period: "...",
+     team_size: "...",
+     summary: "...",
+     technologies: ("...", "..."),
+     achievements: ("...", "..."),
+     tags: ("...", "..."),
+     links: (live: "...", github: "...")
+   )
+   ```
 3. Import it in `applications/oto.typ`
-4. Add it to the `projects` array in the application composition
-5. Run `pnpm build`
+4. Add it to the `projects` array in the application composition.
+5. Run `pnpm build` to compile.
 
 ---
 
@@ -179,13 +197,25 @@ pnpm clean
 A new application represents a specific job application or target audience.
 
 1. Create `applications/new-job.typ`
-2. Import content and projects from the layers above
-3. Compose the `app` dictionary (select projects, set skill emphasis, optionally override summary)
+2. Import content and projects from the layers above.
+3. Compose the `app` dictionary (select projects, set skill categories, optionally override summary).
 4. Pass `app` to `#resume-template(app)`
 5. Update `scripts/build.js` to compile the new entry point, or compile directly:
    ```bash
-   typst compile applications/new-job.typ output/new-job-resume.pdf
+   typst compile --root . applications/new-job.typ output/new-job-resume.pdf
    ```
+
+---
+
+## PDF Metadata Support & Limitations
+
+When compiling, Typst automatically embeds metadata into the generated PDF headers. Currently, the following fields are defined in the template:
+- **Title**: `Career OS Resume`
+- **Author**: `Mohamed Sayed Seoudy`
+- **Keywords**: `Frontend, React, TypeScript, TanStack, Redux Toolkit, Data Visualization`
+
+> [!NOTE]
+> **Typst Metadata Limitations**: Typst's `#set document()` rule natively supports `title`, `author`, `keywords`, and `date` configurations. It does not support a dedicated `subject` field. The subject description has been integrated into the `title` and `keywords` metadata to optimize searchability.
 
 ---
 

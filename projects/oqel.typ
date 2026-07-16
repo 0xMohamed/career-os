@@ -31,5 +31,7 @@
 
   tags: ("ai", "computer-vision", "reasoning", "product", "fullstack"),
 
-  links: (),
+  links: (
+    live: "oqel.vercel.app/",
+  ),
 )

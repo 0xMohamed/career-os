@@ -20,8 +20,9 @@
 
 #let resume-template(app) = {
   set document(
-    title: app.profile.name + " — Resume",
-    author: app.profile.name,
+    title: "Career OS Resume",
+    author: "Mohamed Sayed Seoudy",
+    keywords: ("Frontend", "React", "TypeScript", "TanStack", "Redux Toolkit", "Data Visualization"),
   )
 
   set page(

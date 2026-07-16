@@ -31,6 +31,6 @@
   tags: ("ambient-computing", "product", "frontend", "ux-engineering"),
 
   links: (
-    github: "github.com/0xMohamed/deskby",
+    live: "dskby.vercel.app/",
   ),
 )

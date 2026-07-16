@@ -32,6 +32,6 @@
   tags: ("data-visualization", "performance", "accessibility", "open-source", "frontend"),
 
   links: (
-    github: "github.com/0xMohamed/basira",
+    live: "basira-graph.vercel.app",
   ),
 )
