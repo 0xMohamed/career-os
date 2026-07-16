@@ -13,20 +13,18 @@
   period:      "2024 — Present",
   team_size:   "Solo",
 
-  summary: "A high-performance React application that visualizes massive interactive historical lineages on the web. Integrates D3 force layouts directly against React lifecycles to maintain 60 FPS with large graphs, featuring bilingual layouts (Arabic/English), semantic accessibility, and a premium motion design system.",
+  summary:     "Interactive historical lineage visualization.",
 
   technologies: (
-    "React 19", "TypeScript", "D3.js", "TanStack Router",
-    "Vite 7", "Tailwind CSS",
+    "React", "TypeScript", "TanStack Start", "TanStack Router",
+    "D3.js", "D3 Force", "Canvas", "SVG", "Tailwind CSS",
   ),
 
   achievements: (
-    "Achieved 60 FPS with large force-directed graphs by integrating D3 physics directly against React lifecycles — bypassing Virtual DOM re-renders for simulation ticks.",
-    "Built a viewport culling system that uses mathematical spatial awareness to instantly skip rendering for nodes beyond the camera bounds, maintaining performance at scale.",
-    "Implemented the BiographyPanel with adaptive layouts: desktop modal and mobile bottom sheet driven by velocity-based gesture mapping.",
-    "Achieved WCAG accessibility using semantic landmarks (main, nav, aside, header) with strict useFocusTrap for keyboard navigation through graph nodes.",
-    "Implemented programmatic JSON-LD SEO schemas mapped to Google Rich Results criteria — enabling structured person data for each historical figure.",
-    "Designed a custom D3 collision matrix with fluid edge curvature and real-time hovered lineage highlighting.",
+    "Built force-directed visualizations and immersive exploration lineages.",
+    "Bypassed Virtual DOM bottlenecks to maintain strict 60 FPS viewport rendering using D3 simulation loops.",
+    "Implemented viewport culling to mathematically skip rendering off-screen elements.",
+    "Integrated semantic Landmarking and focus traps to ensure WCAG compliant accessibility.",
   ),
 
   tags: ("data-visualization", "performance", "accessibility", "open-source", "frontend"),

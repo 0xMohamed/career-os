@@ -6,18 +6,15 @@
 // Used by: applications, templates
 
 #let profile = (
-  name:     "Mohamed Seoudy",
-  title:    "Senior Frontend Engineer",
-  location: "Remote",
-
-  // Contact — full URLs without protocol prefix.
-  // Templates add mailto:/https:// as needed.
-  email:    "me@seoudy.dev",
+  name:     "Mohamed Sayed Seoudy",
+  title:    "Frontend Engineer",
+  location: "Cairo, Egypt",
+  email:    "hello@seoudy.dev",
   website:  "seoudy.dev",
   github:   "github.com/0xMohamed",
   linkedin: "linkedin.com/in/0xmohamed",
 
   // A concise professional summary.
   // Applications may override this for specific job families.
-  summary: "Frontend engineer specializing in data visualization, interactive UI systems, and AI-integrated products. Proven track record building performant, accessible, and beautifully crafted interfaces — from real-time graph engines to collaborative slide editors and AI reasoning surfaces.",
+  summary: "Frontend Engineer with 4+ years of experience building complex React applications, interactive editors, design systems, AI-powered products, and data visualization platforms. Specialized in scalable frontend architecture, Redux Toolkit state management, schema-driven development with Zod, and high-performance user interfaces. Passionate about building maintainable SaaS products with exceptional user experiences.",
 )

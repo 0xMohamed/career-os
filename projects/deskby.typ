@@ -13,7 +13,7 @@
   period:      "2022 — 2023",
   team_size:   "1–3",
 
-  summary: "A widget-based ambient dashboard focused on glanceable, calm information display. Deskby provides a canvas of customizable widgets — weather, clocks, news, crypto, Spotify, prayer times, and more — with a strict separation between Edit Mode (interactive chrome) and View Mode (ambient, non-interactive display).",
+  summary:    "Widget-based ambient dashboard.",
 
   technologies: (
     "Next.js", "React", "TypeScript", "Jotai",

@@ -5,9 +5,8 @@
 
 #let education = (
   (
-    institution: "Self-Directed Engineering",
-    degree:      "Frontend Engineering & Systems Design",
-    period:      "2019 — Present",
-    notes:       "Deep specialization through building production systems: data visualization, WebGL, AI interfaces, real-time collaboration, and renderer architecture.",
+    institution: "Cairo Higher Institute",
+    degree:      "Bachelor's Degree in Tourism & Hotels Management",
+    period:      "2018 — 2022",
   ),
 )

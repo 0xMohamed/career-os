@@ -13,29 +13,16 @@
 
 #let experience = (
   (
-    company:   "Lintu",
-    role:      "Lead Frontend Engineer",
-    period:    "2023 — Present",
-    location:  "Remote",
-    summary:   "Building the core product — a data visualization dashboard platform used by analysts and non-technical teams.",
-    highlights: (
-      "Architected and shipped the full WYSIWYG editor from zero: drag-and-drop layout, undo/redo, dataset ingestion, and a block registry supporting charts, maps, text, and images.",
-      "Designed a dual-layer theme system (ThemeDefinition + ThemePreset) adopted across all product surfaces.",
-      "Implemented dataset-linked blocks with live preview, CSV/XLSX parsing, and schema-aware column inference.",
-      "Built the public viewer and share link infrastructure, enabling read-only document distribution.",
-    ),
-  ),
-  (
-    company:   "Deskby",
+    company:   "Independent Frontend Engineer",
     role:      "Frontend Engineer",
-    period:    "2022 — 2023",
+    period:    "Jan 2022 — Present",
     location:  "Remote",
-    summary:   "Contributed to a widget-based ambient dashboard product focused on glanceable, calm information display.",
+    summary:   "Architected and delivered production-grade frontend products and collaborated directly with founders to build interactive SaaS experiences, visual editors, dashboards, and AI-powered products.",
     highlights: (
-      "Built the settings schema system: a declarative, instance-specific configuration layer that renders settings UI automatically from widget definitions.",
-      "Implemented fullscreen reparenting — preserving component state while transitioning widgets into a fullscreen overlay.",
-      "Delivered Weather, Crypto, Prayer Times, and KPI widgets with live data fetching and premium motion design.",
-      "Established the Edit vs View mode architecture separating interactive chrome from ambient display.",
+      "Architected and delivered production-grade frontend products focused on interactive systems, visual editors, dashboards, and AI-powered experiences.",
+      "Designed scalable frontend architectures, reusable UI components, and complex state management solutions.",
+      "Collaborated with founders and product teams to transform ideas into production-ready products.",
+      "Focused on performance, maintainability, accessibility, and engineering quality.",
     ),
   ),
 )
