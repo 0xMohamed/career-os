@@ -1,0 +1,18 @@
+{
+  "name": "career-os",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Career OS — personal career operating system. Single source of truth for professional content.",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "watch": "node scripts/watch.js",
+    "lint": "node scripts/lint.js",
+    "clean": "node -e \"const fs=require('fs'); const p='output'; if(fs.existsSync(p)) fs.rmSync(p,{recursive:true}); fs.mkdirSync(p); console.log('output/ cleaned.');\""
+  },
+  "devDependencies": {}
+}
