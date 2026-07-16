@@ -17,5 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Enriched Project Metadata**: Extended project definitions with fields like `company`, `team_size`, and direct links (`live`, `github`).
 - **Interactive PDF Outputs**: Enabled proper clickable hyperlinks for contact details (Email, Portfolio, GitHub, LinkedIn) and project titles.
 - **Developer Workflow**: Configured scripts with `pnpm` (`build`, `watch`, `lint`, and `clean`) using thin Node.js wrapper scripts.
-- **Lint Script**: Enabled a syntax check on Typst compilation + content files directory lookup.
+- **Default Master Application**: Introduced `applications/master.typ` as the canonical resume entry point.
+- **Dynamic Build & Watch Targets**: Rewrote build and watch scripts to compile any target application passed via `pnpm build -- name`, falling back to `master` by default.
+- **Lint Script**: Enabled a syntax check on Typst compilation + content files directory lookup (updated to support the new `master.typ` structure).
 - **Documentation**: Provided a detailed `README.md` and `profiles/README.md` explaining layout structure and how to extend/scale.
+

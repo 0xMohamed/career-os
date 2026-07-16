@@ -2,11 +2,11 @@
 /**
  * build.js — Career OS build script
  *
- * Compiles the active application (applications/oto.typ) into output/resume.pdf
- * via Typst. Typst is treated as a detachable rendering engine; swapping it for
- * another renderer requires only changing this file.
+ * Compiles a specific application (default: master.typ) into the output folder via Typst.
  *
- * Usage: pnpm build
+ * Usage:
+ *   pnpm build          # compiles applications/master.typ → output/resume.pdf
+ *   pnpm build -- oto   # compiles applications/oto.typ → output/oto.pdf
  */
 
 import { execSync } from "child_process";
@@ -23,12 +23,21 @@ if (!existsSync(outputDir)) {
   mkdirSync(outputDir, { recursive: true });
 }
 
-const entry = resolve(root, "applications", "oto.typ");
-const out = resolve(outputDir, "resume.pdf");
+// Determine target application and output file (filter out '--' prefix passed by package managers)
+const args = process.argv.slice(2).filter(arg => arg !== "--");
+const target = args[0] || "master";
+const entry = resolve(root, "applications", `${target}.typ`);
+const outName = target === "master" ? "resume.pdf" : `${target}.pdf`;
+const out = resolve(outputDir, outName);
+
+if (!existsSync(entry)) {
+  console.error(`\n✗ Error: Application file not found: applications/${target}.typ`);
+  process.exit(1);
+}
 
 console.log("Career OS — building resume...");
-console.log(`  Entry : applications/oto.typ`);
-console.log(`  Output: output/resume.pdf`);
+console.log(`  Entry : applications/${target}.typ`);
+console.log(`  Output: output/${outName}`);
 console.log();
 
 try {
@@ -38,7 +47,7 @@ try {
     stdio: "inherit",
     cwd: root,
   });
-  console.log("\n✓ Build complete → output/resume.pdf");
+  console.log(`\n✓ Build complete → output/${outName}`);
 } catch {
   console.error("\n✗ Build failed. Is Typst installed? Run: brew install typst");
   process.exit(1);

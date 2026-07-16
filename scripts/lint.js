@@ -31,6 +31,7 @@ const REQUIRED_FILES = [
   "projects/basira.typ",
   "projects/deskby.typ",
   // Application layer
+  "applications/master.typ",
   "applications/oto.typ",
   // Template layer
   "templates/resume.typ",
@@ -56,7 +57,7 @@ console.log();
 
 // 2. Try a dry Typst compile to catch syntax errors
 try {
-  const entry = resolve(root, "applications", "oto.typ");
+  const entry = resolve(root, "applications", "master.typ");
   execSync(`typst compile --root "${root}" --format pdf "${entry}" /dev/null`, {
     stdio: "pipe",
     cwd: root,
