@@ -30,6 +30,7 @@ const REQUIRED_FILES = [
   "projects/oqel.typ",
   "projects/basira.typ",
   "projects/deskby.typ",
+  "projects/cargolab.typ",
   // Application layer
   "applications/master.typ",
   "applications/oto.typ",

@@ -9,8 +9,8 @@
   role:       "Founding Engineer",
   company:    "Oqel",
   type:       "Product",
-  status:     "Active",
-  period:     "2024 — Present",
+  status:     "Completed",
+  period:     "2026",
   team_size:  "Solo",
 
   summary:    "AI-powered personal presence analyzer.",

@@ -3,27 +3,112 @@
 // Skills — the single source of truth for technical skills.
 // No layout, no rendering. Only structured data.
 //
-// Organized into logical categories. Every skill here is backed by
-// real project work — nothing is listed speculatively.
-//
-// Applications consume this file and may subset or reorder categories.
-// Templates render whatever the application passes in.
+// Every skill listed here is backed by real project experience.
+// Applications may choose which categories or skills to surface,
+// while templates remain completely presentation-agnostic.
 
 #let skills = (
   (
+    category: "Languages",
+    items: (
+      "TypeScript",
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "Python",
+    ),
+  ),
+
+  (
     category: "Frontend",
-    items: ("React", "TypeScript", "JavaScript", "TanStack Start", "TanStack Router", "Redux Toolkit", "React Query", "Jotai", "React Hook Form"),
+    items: (
+      "React",
+      "Next.js",
+      "TanStack Start",
+      "TanStack Router",
+      "React Router",
+      "React Hook Form",
+      "Vite",
+    ),
   ),
+
   (
-    category: "UI Engineering",
-    items: ("Design Systems", "Component Libraries", "Tailwind CSS", "dnd-kit", "Lexical", "Performance Optimization", "Accessibility"),
+    category: "State Management",
+    items: (
+      "Redux Toolkit",
+      "Zustand",
+      "Jotai",
+      "TanStack Query",
+      "Zod",
+    ),
   ),
+
   (
-    category: "Validation & Data",
-    items: ("Zod", "Redux Entity Adapter", "D3.js", "Visx", "Canvas API", "SVG", "Mapbox GL"),
+    category: "Styling",
+    items: (
+      "Tailwind CSS",
+      "Design Systems",
+      "Design Tokens",
+      "Responsive UI",
+    ),
   ),
+
   (
-    category: "Backend & AI",
-    items: ("Node.js", "Fastify", "Express", "Prisma", "Neon PostgreSQL", "Cloudflare R2", "OpenRouter", "LLM Integration"),
+    category: "Data Visualization",
+    items: (
+      "Canvas",
+      "SVG",
+      "D3.js",
+      "VISX",
+      "Mapbox GL",
+      "Three.js",
+    ),
+  ),
+
+  (
+    category: "Backend",
+    items: (
+      "Node.js",
+      "Express",
+      "Fastify",
+      "Prisma",
+      "PostgreSQL",
+      "REST APIs",
+    ),
+  ),
+
+  (
+    category: "AI",
+    items: (
+      "LLM Integration",
+      "Prompt Engineering",
+      "Structured Outputs",
+      "AI Workflows",
+      "Multi-modal AI",
+    ),
+  ),
+
+  (
+    category: "Engineering",
+    items: (
+      "Component Architecture",
+      "Design Systems",
+      "State Management",
+      "Performance Optimization",
+      "Accessibility",
+    ),
+  ),
+
+  (
+    category: "Tooling",
+    items: (
+      "Git",
+      "pnpm",
+      "ESLint",
+      "Prettier",
+      "Vitest",
+      "Storybook",
+      "Turborepo",
+    ),
   ),
 )

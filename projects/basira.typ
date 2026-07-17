@@ -9,15 +9,15 @@
   role:        "Creator & Engineer",
   company:     "Basira",
   type:        "Open Source / Exploration",
-  status:      "Active",
-  period:      "2024 — Present",
+  status:      "Completed",
+  period:      "2026",
   team_size:   "Solo",
 
   summary:     "Interactive historical lineage visualization.",
 
   technologies: (
     "React", "TypeScript", "TanStack Start", "TanStack Router",
-    "D3.js", "D3 Force", "Canvas", "SVG", "Tailwind CSS",
+    "D3.js", "D3 Force", "Canvas", "Tailwind CSS",
   ),
 
   achievements: (

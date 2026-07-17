@@ -9,9 +9,9 @@
   role:       "Founding Engineer",
   company:    "Modra",
   type:       "Product",
-  status:     "Active",
-  period:     "2024 — Present",
-  team_size:  "2–4",
+  status:     "Completed",
+  period:     "2026",
+  team_size:  "Solo",
 
   summary:    "AI-powered presentation platform.",
 

@@ -26,6 +26,7 @@
 #import "../projects/oqel.typ":    oqel
 #import "../projects/basira.typ":  basira
 #import "../projects/deskby.typ":  deskby
+#import "../projects/cargolab.typ": cargolab
 
 // ── Application composition ─────────────────────────────────────────
 //
@@ -41,7 +42,7 @@
 
   // Projects ordered by relevance for this application.
   // The template renders them in this order.
-  projects: (lintu, modra, oqel, basira, deskby),
+  projects: (lintu, modra, oqel, basira, deskby, cargolab),
 
   experience: experience,
   education:  education,

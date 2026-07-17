@@ -11,8 +11,8 @@
   role:       "Co-Founder & Frontend Engineer",
   company:    "Lintu",
   type:       "Product",
-  status:     "Active",
-  period:     "2023 — Present",
+  status:     "Completed",
+  period:     "2022 — 2025",
   team_size:  "2–5",
 
   summary:    "Interactive storytelling and data visualization platform.",

@@ -10,7 +10,7 @@
   company:     "Deskby",
   type:        "Product",
   status:      "Completed",
-  period:      "2022 — 2023",
+  period:      "2025",
   team_size:   "1–3",
 
   summary:    "Widget-based ambient dashboard.",

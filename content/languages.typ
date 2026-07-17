@@ -5,5 +5,5 @@
 
 #let languages = (
   (name: "Arabic",  level: "Native"),
-  (name: "English", level: "Fluent"),
+  (name: "English", level: "Intermediate"),
 )

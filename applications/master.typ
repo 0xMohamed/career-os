@@ -19,13 +19,14 @@
 #import "../projects/oqel.typ":    oqel
 #import "../projects/basira.typ":  basira
 #import "../projects/deskby.typ":  deskby
+#import "../projects/cargolab.typ": cargolab
 
 // ── Master composition ──────────────────────────────────────────────
 #let app = (
   profile: profile,
 
   // All projects included in canonical order.
-  projects: (lintu, modra, oqel, basira, deskby),
+  projects: (lintu, modra, oqel, basira, deskby, cargolab),
 
   experience: experience,
   education:  education,

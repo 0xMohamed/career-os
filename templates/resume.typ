@@ -274,7 +274,7 @@
   section-heading("Languages")
 
   grid(
-    columns: app.languages.len() * (80pt,),
+    columns: app.languages.len() * (100pt,),
     gutter: 8pt,
     ..app.languages.map(lang =>
       grid.cell[

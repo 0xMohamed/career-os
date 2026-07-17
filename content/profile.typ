@@ -6,7 +6,7 @@
 // Used by: applications, templates
 
 #let profile = (
-  name:     "Mohamed Sayed Seoudy",
+  name:     "Mohamed Seoudy",
   title:    "Frontend Engineer",
   location: "Cairo, Egypt",
   email:    "hello@seoudy.dev",
@@ -16,5 +16,5 @@
 
   // A concise professional summary.
   // Applications may override this for specific job families.
-  summary: "Frontend Engineer with 4+ years of experience building complex React applications, interactive editors, design systems, AI-powered products, and data visualization platforms. Specialized in scalable frontend architecture, Redux Toolkit state management, schema-driven development with Zod, and high-performance user interfaces. Passionate about building maintainable SaaS products with exceptional user experiences.",
+  summary: "Frontend engineer specializing in building complex, interaction-rich product interfaces with React and TypeScript. Experienced in frontend architecture, design systems, data visualization, and AI-enabled user experiences, with a strong focus on performance, scalability, and crafting products that are intuitive, maintainable, and enjoyable to use.",
 )
