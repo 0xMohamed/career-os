@@ -19,10 +19,10 @@
     location:  "Remote",
     summary:   "Architected and delivered production-grade frontend products and collaborated directly with founders to build interactive SaaS experiences, visual editors, dashboards, and AI-powered products.",
     highlights: (
-      "Architected and delivered production-grade frontend products focused on interactive systems, visual editors, dashboards, and AI-powered experiences.",
-      "Designed scalable frontend architectures, reusable UI components, and complex state management solutions.",
-      "Collaborated with founders and product teams to transform ideas into production-ready products.",
-      "Focused on performance, maintainability, accessibility, and engineering quality.",
+      "Architected and shipped full-featured interactive SaaS platforms, drag-and-drop visual editors, and ambient canvas dashboards using React, Next.js, and TypeScript.",
+      "Engineered scalable client-side architectures with normalized state (Redux Toolkit, Jotai, Zustand) and declarative schema validation (Zod, React Hook Form).",
+      "Built real-time data visualization systems with D3, Visx, and Mapbox GL, optimizing canvas and DOM loops to sustain 60 FPS under high event frequency.",
+      "Integrated production AI workflows leveraging Google Gemini, multimodal processing, structured JSON schemas, and resilient client-side hydration.",
     ),
   ),
 )

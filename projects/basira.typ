@@ -13,7 +13,7 @@
   period:      "2026",
   team_size:   "Solo",
 
-  summary:     "Interactive historical lineage visualization.",
+  summary:     "Interactive force-directed historical graph visualization.",
 
   technologies: (
     "React", "TypeScript", "TanStack Start", "TanStack Router",
@@ -21,10 +21,9 @@
   ),
 
   achievements: (
-    "Built force-directed visualizations and immersive exploration lineages.",
-    "Bypassed Virtual DOM bottlenecks to maintain strict 60 FPS viewport rendering using D3 simulation loops.",
-    "Implemented viewport culling to mathematically skip rendering off-screen elements.",
-    "Integrated semantic Landmarking and focus traps to ensure WCAG compliant accessibility.",
+    "Engineered force-directed graph simulations using D3.js, bypassing Virtual DOM bottlenecks to maintain strict 60 FPS rendering.",
+    "Implemented mathematical viewport culling and WCAG-compliant keyboard navigation and focus management.",
+    "Built immersive exploratory lineages with responsive zoom/pan canvas viewports.",
   ),
 
   tags: ("data-visualization", "performance", "accessibility", "open-source", "frontend"),

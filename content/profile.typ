@@ -8,6 +8,7 @@
 #let profile = (
   name:     "Mohamed Seoudy",
   title:    "Frontend Engineer",
+  tagline:  "Frontend Engineer | Interactive Systems | Data Visualization | AI-Powered Experiences",
   location: "Cairo, Egypt",
   email:    "hello@seoudy.dev",
   website:  "seoudy.dev",
@@ -16,5 +17,5 @@
 
   // A concise professional summary.
   // Applications may override this for specific job families.
-  summary: "Frontend engineer specializing in building complex, interaction-rich product interfaces with React and TypeScript. Experienced in frontend architecture, design systems, data visualization, and AI-enabled user experiences, with a strong focus on performance, scalability, and crafting products that are intuitive, maintainable, and enjoyable to use.",
+  summary: "Frontend engineer with 4+ years of experience architecting complex interactive interfaces, visual canvas editors, and high-performance data visualizations with React, Next.js, and TypeScript. Deep expertise in frontend architecture, state management, and design systems, currently expanding into AI-native application engineering with multimodal LLM workflows, structured outputs, and Python backend services.",
 )

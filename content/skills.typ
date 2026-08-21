@@ -13,8 +13,8 @@
     items: (
       "TypeScript",
       "JavaScript",
-      "HTML",
-      "CSS",
+      "HTML5",
+      "CSS3",
       "Python",
     ),
   ),
@@ -44,22 +44,23 @@
   ),
 
   (
-    category: "Styling",
+    category: "Styling & UI",
     items: (
       "Tailwind CSS",
+      "CSS Modules",
       "Design Systems",
       "Design Tokens",
-      "Responsive UI",
+      "Responsive Design",
     ),
   ),
 
   (
     category: "Data Visualization",
     items: (
-      "Canvas",
-      "SVG",
       "D3.js",
-      "VISX",
+      "Visx",
+      "Canvas API",
+      "SVG",
       "Mapbox GL",
       "Three.js",
     ),
@@ -69,33 +70,33 @@
     category: "Backend",
     items: (
       "Node.js",
-      "Express",
       "Fastify",
-      "Prisma",
+      "Express",
       "PostgreSQL",
+      "Prisma",
       "REST APIs",
     ),
   ),
 
   (
-    category: "AI",
+    category: "AI & LLM Integration",
     items: (
       "LLM Integration",
       "Prompt Engineering",
       "Structured Outputs",
       "AI Workflows",
-      "Multi-modal AI",
+      "Multimodal AI",
     ),
   ),
 
   (
-    category: "Engineering",
+    category: "Engineering Practices",
     items: (
       "Component Architecture",
-      "Design Systems",
-      "State Management",
       "Performance Optimization",
-      "Accessibility",
+      "Accessibility (WCAG)",
+      "Monorepos",
+      "Cross-Browser Compatibility",
     ),
   ),
 

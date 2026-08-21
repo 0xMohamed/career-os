@@ -13,7 +13,7 @@
   period:     "2026",
   team_size:  "Solo",
 
-  summary:    "AI-powered personal presence analyzer.",
+  summary:    "AI-driven personal presence and visual style analyzer.",
 
   technologies: (
     "React", "TypeScript", "TanStack Start", "React Query",
@@ -22,9 +22,9 @@
   ),
 
   achievements: (
-    "Built multimodal AI workflows with structured outputs using Gemini 2.5 Flash and Zod.",
-    "Developed a polished, responsive, and interactive frontend canvas for styling reports.",
-    "Designed and tested the validation reasoning engine and narrative adapter compilers.",
+    "Built multimodal AI pipelines leveraging Google Gemini 2.5 Flash and Zod schemas for deterministic structured outputs.",
+    "Developed an interactive canvas dashboard with real-time feedback and structured report generation.",
+    "Designed the validation reasoning engine and narrative adapter compilers connecting frontend to Fastify backend.",
   ),
 
   tags: ("ai", "computer-vision", "reasoning", "product", "fullstack"),

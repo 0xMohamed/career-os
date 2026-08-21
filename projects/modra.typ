@@ -13,7 +13,7 @@
   period:     "2026",
   team_size:  "Solo",
 
-  summary:    "AI-powered presentation platform.",
+  summary:    "AI-powered presentation platform with modular canvas editing.",
 
   technologies: (
     "React", "TypeScript", "TanStack Router", "Zustand",
@@ -21,11 +21,9 @@
   ),
 
   achievements: (
-    "Built a modular visual editor with customizable presentation blocks.",
-    "Designed shared contracts and AI-assisted creation workflows.",
-    "Implemented reusable presentation templates and optimized rendering performance.",
-    "Designed a shared contracts package (@modra/ai-contracts) enforcing type safety between modules.",
-    "Implemented a reactive AI image hydration system utilizing transient pending states.",
+    "Engineered a modular visual slide editor with customizable block layouts and shared TypeScript contracts (@modra/ai-contracts).",
+    "Implemented reactive AI image hydration workflows utilizing transient pending states for asynchronous generation.",
+    "Built reusable presentation templates and optimized canvas rendering performance.",
   ),
 
   tags: ("ai", "data-visualization", "product", "frontend", "monorepo"),

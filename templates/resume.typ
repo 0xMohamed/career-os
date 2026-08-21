@@ -3,43 +3,50 @@
 // The resume renderer for Career OS.
 //
 // This template receives a fully prepared `app` dictionary from the
-// application layer and renders it. It knows nothing about:
+// application layer and renders a modern two-column editorial resume.
+//
+// It knows nothing about:
 //   - companies or job applications
 //   - project selection logic
 //   - business rules or prioritization
 //
-// It only renders what it receives.
-//
-// Changing visual layout: edit this file.
-// Changing content: edit content/, projects/, or applications/.
-// Changing visual design: edit theme.typ.
+// It renders what it receives:
+//   - app.profile
+//   - app.experience
+//   - app.projects
+//   - app.strengths
+//   - app.education
+//   - app.skills
+//   - app.languages
 
 #import "theme.typ": *
 
-// ── Page setup ───────────────────────────────────────────────────────
+// ── Main resume template ─────────────────────────────────────────────
 
 #let resume-template(app) = {
+  let p = app.profile
+
   set document(
-    title: "Career OS Resume",
-    author: "Mohamed Sayed Seoudy",
-    keywords: ("Frontend", "React", "TypeScript", "TanStack", "Redux Toolkit", "Data Visualization"),
+    title: p.name + " — Resume",
+    author: p.name,
+    keywords: ("Frontend", "React", "TypeScript", "TanStack", "Data Visualization", "AI", "Design Systems"),
   )
 
   set page(
     paper: "a4",
-    margin: (x: 1.6cm, y: 1.4cm),
+    margin: (x: 1.4cm, top: 1.15cm, bottom: 1.15cm),
   )
 
   set text(
-    font: font-body,
+    font: font-sans,
     size: size-body,
     fill: color-ink,
     hyphenate: false,
   )
 
   set par(
-    justify: true,
-    leading: 0.55em,
+    justify: false,
+    leading: 0.48em,
   )
 
   // ── Helper: section heading ─────────────────────────────────────────
@@ -48,16 +55,16 @@
     text(
       font: font-sans,
       size: size-section,
-      weight: "semibold",
-      fill: color-accent,
+      weight: "bold",
+      fill: color-ink,
       upper(label),
     )
     v(1.5pt)
-    line(length: 100%, stroke: 0.5pt + color-rule)
+    line(length: 100%, stroke: 0.9pt + color-rule-dark)
     v(space-inner)
   }
 
-  // ── Helper: meta line (dates, location) ────────────────────────────
+  // ── Helper: meta text row ───────────────────────────────────────────
   let meta-text(content) = text(
     font: font-sans,
     size: size-meta,
@@ -65,223 +72,241 @@
     content,
   )
 
-  // ── Helper: skill tag ──────────────────────────────────────────────
-  let skill-tag(label) = box(
-    fill: color-tag-bg,
-    inset: (x: 5pt, y: 2.5pt),
-    radius: 2pt,
-    text(
-      font: font-mono,
-      size: size-small - 0.5pt,
-      fill: color-tag-fg,
-      label,
-    ),
-  )
+  // ── Helper: subtle dotted divider between items ─────────────────────
+  let dotted-divider() = {
+    v(space-tight)
+    line(length: 100%, stroke: (paint: color-rule, dash: "dotted", thickness: 0.5pt))
+    v(space-tight)
+  }
+
+  // ── Helper: bullet item ─────────────────────────────────────────────
+  let bullet(content) = {
+    grid(
+      columns: (5.5pt, 1fr),
+      gutter: 2pt,
+      text(fill: color-muted, size: size-body)[•],
+      text(size: size-body, fill: color-ink)[#content],
+    )
+    v(space-tight)
+  }
 
   // ════════════════════════════════════════════════════════════════════
   // HEADER
   // ════════════════════════════════════════════════════════════════════
-  let p = app.profile
+  let display-tagline = if "tagline" in p and p.tagline != none and p.tagline != "" {
+    p.tagline
+  } else {
+    p.title
+  }
+
+  // Monogram initials derivation (e.g. Mohamed Seoudy → MS)
+  let name-parts = p.name.split(" ")
+  let initials = if name-parts.len() >= 2 {
+    name-parts.at(0).slice(0, 1) + name-parts.at(-1).slice(0, 1)
+  } else {
+    p.name.slice(0, 1)
+  }
+
   grid(
     columns: (1fr, auto),
-    gutter: 8pt,
-    // Left: name + title
-    align(left)[
+    gutter: 14pt,
+    align: (left + horizon, right + horizon),
+    [
       #text(
         font: font-sans,
         size: size-name,
         weight: "bold",
         fill: color-ink,
-        p.name,
+        upper(p.name),
       )
-      #v(2pt)
+      #v(2.5pt)
       #text(
         font: font-sans,
-        size: size-title,
-        fill: color-secondary,
-        p.title,
+        size: size-tagline,
+        weight: "bold",
+        fill: color-accent,
+        display-tagline,
       )
-    ],
-    // Right: contact info
-    align(right + horizon)[
-      #set text(font: font-sans, size: size-meta, fill: color-muted)
-      #link("mailto:" + p.email)[#text(fill: color-accent)[#p.email]] \
-      #link("https://" + p.website)[#text(fill: color-accent)[#p.website]] \
-      #link("https://" + p.github)[#text(fill: color-accent)[#p.github]] \
-      #if "linkedin" in p [
-        #link("https://" + p.linkedin)[#text(fill: color-accent)[#p.linkedin]] \
+      #v(4pt)
+      #set text(font: font-sans, size: size-meta, fill: color-secondary)
+      #link("mailto:" + p.email)[#icon-mail #h(2pt) #p.email]
+      #h(6.5pt)
+      #link("https://" + p.website)[#icon-link #h(2pt) #p.website]
+      #h(6.5pt)
+      #link("https://" + p.github)[#icon-github #h(2pt) #p.github]
+      #h(6.5pt)
+      #if "linkedin" in p and p.linkedin != none and p.linkedin != "" [
+        #link("https://" + p.linkedin)[#icon-linkedin #h(2pt) #p.linkedin]
+        #h(6.5pt)
       ]
-      #p.location
+      #icon-location #h(2pt) #p.location
     ],
+    [
+      #circle(radius: 20pt, fill: color-accent)[
+        #align(center + horizon)[
+          #text(fill: white, weight: "bold", size: 13.5pt)[#initials]
+        ]
+      ]
+    ]
   )
 
-  // Summary
-  v(8pt)
-  text(
-    font: font-sans,
-    size: size-body,
-    fill: color-secondary,
-    style: "italic",
-    p.summary,
-  )
+  v(3pt)
 
   // ════════════════════════════════════════════════════════════════════
-  // EXPERIENCE
+  // TWO COLUMN CONTENT LAYOUT
   // ════════════════════════════════════════════════════════════════════
-  section-heading("Experience")
 
-  for entry in app.experience {
-    // Entry header row
-    grid(
-      columns: (1fr, auto),
-      grid.cell(align: left)[
-        #text(font: font-sans, size: size-body, weight: "semibold")[#entry.company]
-        #h(6pt)
-        #text(font: font-sans, size: size-body, fill: color-secondary)[#entry.role]
-      ],
-      grid.cell(align: right)[
-        #meta-text[#entry.period · #entry.location]
-      ],
-    )
-    v(space-tight)
+  let left-col = [
+    // ── EXPERIENCE ───────────────────────────────────────────────────
+    #if "experience" in app and app.experience != none and app.experience.len() > 0 [
+      #section-heading("Experience")
+      #for entry in app.experience [
+        #block(breakable: false)[
+          #text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#entry.role]
+          #h(3pt)
+          #text(font: font-sans, size: size-title, weight: "medium", fill: color-secondary)[· #entry.company]
+          #v(1.5pt)
+          #meta-text[#icon-calendar #h(2pt) #entry.period #h(6pt) #icon-location #h(2pt) #entry.location]
+          #v(space-tight)
+          #for hl in entry.highlights [
+            #bullet(hl)
+          ]
+          #v(space-entry)
+        ]
+      ]
+    ]
 
-    // Highlights
-    for bullet in entry.highlights {
-      grid(
-        columns: (8pt, 1fr),
-        gutter: 3pt,
-        text(fill: color-accent)[–],
-        text(size: size-body)[#bullet],
-      )
-      v(space-tight)
-    }
-    v(space-entry)
-  }
-
-  // ════════════════════════════════════════════════════════════════════
-  // PROJECTS
-  // ════════════════════════════════════════════════════════════════════
-  section-heading("Projects")
-
-  for proj in app.projects {
-    // Project header
-    grid(
-      columns: (1fr, auto),
-      grid.cell(align: left)[
-        #let target-link = none
-        #if "links" in proj and proj.links != none {
-          if "live" in proj.links and proj.links.live != none and proj.links.live != "" {
-            target-link = proj.links.live
-          } else if "github" in proj.links and proj.links.github != none and proj.links.github != "" {
-            target-link = proj.links.github
+    // ── PROJECTS ─────────────────────────────────────────────────────
+    #if "projects" in app and app.projects != none and app.projects.len() > 0 [
+      #section-heading("Projects")
+      #for (i, proj) in app.projects.enumerate() [
+        #block(breakable: false)[
+          #let target-link = none
+          #if "links" in proj and proj.links != none {
+            if "live" in proj.links and proj.links.live != none and proj.links.live != "" {
+              target-link = proj.links.live
+            } else if "github" in proj.links and proj.links.github != none and proj.links.github != "" {
+              target-link = proj.links.github
+            }
           }
-        }
-        #if target-link != none {
-          let url = target-link
-          if not url.starts-with("http://") and not url.starts-with("https://") {
-            url = "https://" + url
+          #if target-link != none {
+            let url = target-link
+            if not url.starts-with("http://") and not url.starts-with("https://") {
+              url = "https://" + url
+            }
+            link(url)[#text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#proj.title]]
+          } else {
+            text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#proj.title]
           }
-          link(url)[#text(font: font-sans, size: size-body, weight: "semibold", fill: color-accent)[#proj.title]]
-        } else {
-          text(font: font-sans, size: size-body, weight: "semibold")[#proj.title]
-        }
-        #h(5pt)
-        #text(font: font-sans, size: size-small, fill: color-muted)[#proj.role]
-      ],
-      grid.cell(align: right)[
-        #meta-text[#proj.period]
-      ],
-    )
-    v(space-tight)
+          #v(1pt)
+          #meta-text[#icon-calendar #h(2pt) #proj.period]
+          #v(1.5pt)
+          #text(size: size-body, fill: color-secondary)[#proj.summary]
+          #v(space-tight)
+          #let top-achievements = proj.achievements.slice(0, calc.min(2, proj.achievements.len()))
+          #for bullet-item in top-achievements [
+            #bullet(bullet-item)
+          ]
+          #if i < app.projects.len() - 1 [
+            #dotted-divider()
+          ]
+        ]
+      ]
+    ]
+  ]
 
-    // Technologies (compact, monospace row)
-    text(
-      font: font-mono,
-      size: size-small,
-      fill: color-muted,
-      proj.technologies.join(" · "),
-    )
-    v(space-tight)
-
-    // Summary sentence
-    text(size: size-body, style: "italic", fill: color-secondary)[#proj.summary]
-    v(space-tight)
-
-    // Top 2 achievements to keep resume tight
-    let top-achievements = proj.achievements.slice(0, calc.min(2, proj.achievements.len()))
-    for bullet in top-achievements {
-      grid(
-        columns: (8pt, 1fr),
-        gutter: 3pt,
-        text(fill: color-accent)[–],
-        text(size: size-body)[#bullet],
+  let right-col = [
+    // ── SUMMARY ──────────────────────────────────────────────────────
+    #if "summary" in p and p.summary != none and p.summary != "" [
+      #section-heading("Summary")
+      #text(
+        size: size-body,
+        fill: color-secondary,
+        p.summary,
       )
-      v(space-tight)
-    }
-    v(space-entry)
-  }
+    ]
 
-  // ════════════════════════════════════════════════════════════════════
-  // SKILLS
-  // ════════════════════════════════════════════════════════════════════
-  section-heading("Skills")
+    // ── KEY STRENGTHS ────────────────────────────────────────────────
+    #if "strengths" in app and app.strengths != none and app.strengths.len() > 0 [
+      #section-heading("Key Strengths")
+      #for (i, s) in app.strengths.enumerate() [
+        #block(breakable: false)[
+          #grid(
+            columns: (10pt, 1fr),
+            gutter: 2pt,
+            align: (top + left, top + left),
+            icon-gem,
+            [
+              #text(font: font-sans, size: size-body, weight: "bold", fill: color-ink)[#s.title] \
+              #v(0.5pt)
+              #text(size: size-small, fill: color-secondary)[#s.description]
+            ]
+          )
+          #if i < app.strengths.len() - 1 [
+            #dotted-divider()
+          ]
+        ]
+      ]
+    ]
 
-  for group in app.skills {
-    grid(
-      columns: (70pt, 1fr),
-      gutter: 4pt,
-      grid.cell(align: left + top)[
-        #text(font: font-sans, size: size-small, weight: "medium", fill: color-secondary)[#group.category]
-      ],
-      grid.cell[
-        // Skill tags are inline boxes — they wrap naturally in paragraph flow.
-        #for skill in group.items {
-          skill-tag(skill)
-          h(3pt)
-        }
-      ],
-    )
-    v(5pt)
-  }
+    // ── EDUCATION ────────────────────────────────────────────────────
+    #if "education" in app and app.education != none and app.education.len() > 0 [
+      #section-heading("Education")
+      #for entry in app.education [
+        #block(breakable: false)[
+          #text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#entry.degree] \
+          #v(1pt)
+          #text(font: font-sans, size: size-body, weight: "semibold", fill: color-accent)[#entry.institution] \
+          #v(1pt)
+          #meta-text[#icon-calendar #h(2pt) #entry.period]
+          #v(space-entry)
+        ]
+      ]
+    ]
 
-  // ════════════════════════════════════════════════════════════════════
-  // EDUCATION
-  // ════════════════════════════════════════════════════════════════════
-  section-heading("Education")
+    // ── SKILLS ───────────────────────────────────────────────────────
+    #if "skills" in app and app.skills != none and app.skills.len() > 0 [
+      #section-heading("Skills")
+      #for (i, group) in app.skills.enumerate() [
+        #block(breakable: false)[
+          #text(font: font-sans, size: size-body, weight: "bold", fill: color-accent)[#group.category]
+          #v(1.5pt)
+          #par(leading: 0.6em)[
+            #for skill in group.items [
+              #box(
+                inset: (x: 3pt, top: 0.5pt, bottom: 1.5pt),
+                stroke: (bottom: 0.6pt + color-underline),
+                text(font: font-sans, size: size-small, weight: "medium", fill: color-ink)[#skill]
+              )
+              #h(2.5pt)
+            ]
+          ]
+          #if i < app.skills.len() - 1 [
+            #dotted-divider()
+          ]
+        ]
+      ]
+    ]
 
-  for entry in app.education {
-    grid(
-      columns: (1fr, auto),
-      grid.cell(align: left)[
-        #text(font: font-sans, size: size-body, weight: "semibold")[#entry.institution]
-        #h(5pt)
-        #text(font: font-sans, size: size-body, fill: color-secondary)[#entry.degree]
-      ],
-      grid.cell(align: right)[
-        #meta-text[#entry.period]
-      ],
-    )
-    if "notes" in entry {
-      v(space-tight)
-      text(size: size-body, fill: color-secondary, style: "italic")[#entry.notes]
-    }
-    v(space-entry)
-  }
-
-  // ════════════════════════════════════════════════════════════════════
-  // LANGUAGES
-  // ════════════════════════════════════════════════════════════════════
-  section-heading("Languages")
+    // ── LANGUAGES ────────────────────────────────────────────────────
+    #if "languages" in app and app.languages != none and app.languages.len() > 0 [
+      #section-heading("Languages")
+      #for (i, lang) in app.languages.enumerate() [
+        #block(breakable: false)[
+          #text(font: font-sans, size: size-body, weight: "bold", fill: color-ink)[#lang.name] \
+          #text(font: font-sans, size: size-small, fill: color-muted)[#lang.level]
+          #if i < app.languages.len() - 1 [
+            #dotted-divider()
+          ]
+        ]
+      ]
+    ]
+  ]
 
   grid(
-    columns: app.languages.len() * (100pt,),
-    gutter: 8pt,
-    ..app.languages.map(lang =>
-      grid.cell[
-        #text(font: font-sans, size: size-body, weight: "semibold")[#lang.name]
-        #h(4pt)
-        #text(font: font-sans, size: size-small, fill: color-muted)[#lang.level]
-      ]
-    )
+    columns: (58%, 1fr),
+    gutter: 15pt,
+    left-col,
+    right-col,
   )
 }

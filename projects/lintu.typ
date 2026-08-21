@@ -15,7 +15,7 @@
   period:     "2022 — 2025",
   team_size:  "2–5",
 
-  summary:    "Interactive storytelling and data visualization platform.",
+  summary:    "Interactive storytelling and multi-layer data visualization platform.",
 
   technologies: (
     "React", "TypeScript", "Redux Toolkit", "React Query",
@@ -24,11 +24,9 @@
   ),
 
   achievements: (
-    "Solely architected and developed the frontend application from the ground up.",
-    "Built a reusable design system and custom drag-and-drop editing experience.",
-    "Implemented normalized client-side state using Redux Toolkit Entity Adapter.",
-    "Developed schema-driven content models with Zod and React Hook Form validation.",
-    "Built advanced visualization and mapping experiences using D3, Visx, and Mapbox GL.",
+    "Solely architected and engineered the frontend application, building a custom drag-and-drop block editor and modular design system.",
+    "Implemented normalized state management using Redux Toolkit Entity Adapter and schema-validated forms with Zod.",
+    "Built multi-layered interactive mapping and charting components with D3.js, Visx, and Mapbox GL.",
   ),
 
   tags: ("data-visualization", "product", "frontend", "editor", "design-systems"),

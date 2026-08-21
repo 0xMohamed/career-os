@@ -19,6 +19,7 @@
 #import "../content/education.typ":  education
 #import "../content/languages.typ":  languages
 #import "../content/skills.typ":     skills
+#import "../content/strengths.typ":  strengths
 
 // ── Import project layer ────────────────────────────────────────────
 #import "../projects/lintu.typ":   lintu
@@ -45,6 +46,7 @@
   projects: (lintu, modra, oqel, basira, deskby, cargolab),
 
   experience: experience,
+  strengths:  strengths,
   education:  education,
   languages:  languages,
 

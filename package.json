@@ -12,6 +12,7 @@
     "build": "node scripts/build.js",
     "watch": "node scripts/watch.js",
     "lint": "node scripts/lint.js",
+    "test:ats": "node scripts/verify-ats.js",
     "clean": "node -e \"const fs=require('fs'); const p='output'; if(fs.existsSync(p)) fs.rmSync(p,{recursive:true}); fs.mkdirSync(p); console.log('output/ cleaned.');\""
   },
   "devDependencies": {}

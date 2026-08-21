@@ -13,7 +13,7 @@
   period:      "2025",
   team_size:   "Solo",
 
-  summary:     "Animated global cargo tracking and simulation dashboard.",
+  summary:     "Real-time global cargo simulation and interactive tracking dashboard.",
 
   technologies: (
     "SolidJS", "TypeScript", "Vite", "D3.js",
@@ -21,10 +21,9 @@
   ),
 
   achievements: (
-    "Built a 3D animated interactive globe using D3.js and d3-geo tracking real-time simulated cargo movements.",
-    "Implemented an interactive cargo bay manager dashboard simulating container placement and grid stacking logic.",
-    "Created an animated canvas-based AI Brain visualization sphere representing neural activity and stats.",
-    "Developed modular, reusable D3 charting components styled via custom theme-aware CSS modules.",
+    "Built an interactive 3D orthographic globe simulation using D3.js and d3-geo tracking real-time vessel trajectories.",
+    "Developed an interactive cargo container placement engine with dynamic spatial grid stacking logic.",
+    "Engineered modular D3 charting components styled via theme-aware CSS modules.",
   ),
 
   tags: ("data-visualization", "solidjs", "exploration", "creative-ui", "frontend"),
