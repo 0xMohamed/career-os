@@ -129,14 +129,21 @@
       )
       #v(4pt)
       #set text(font: font-sans, size: size-meta, fill: color-secondary)
+      #if "phone" in p and p.phone != none and p.phone != "" [
+        #let clean-phone = p.phone.replace(" ", "")
+        #link("tel:" + clean-phone)[#icon-phone #h(2pt) #p.phone]
+        #h(6.5pt)
+      ]
       #link("mailto:" + p.email)[#icon-mail #h(2pt) #p.email]
       #h(6.5pt)
       #link("https://" + p.website)[#icon-link #h(2pt) #p.website]
       #h(6.5pt)
-      #link("https://" + p.github)[#icon-github #h(2pt) #p.github]
-      #h(6.5pt)
+      #if "github" in p and p.github != none and p.github != "" [
+        #link("https://" + p.github)[#icon-github #h(2pt) GitHub · 0xMohamed]
+        #h(6.5pt)
+      ]
       #if "linkedin" in p and p.linkedin != none and p.linkedin != "" [
-        #link("https://" + p.linkedin)[#icon-linkedin #h(2pt) #p.linkedin]
+        #link("https://" + p.linkedin)[#icon-linkedin #h(2pt) LinkedIn · 0xMohamed]
         #h(6.5pt)
       ]
       #icon-location #h(2pt) #p.location
@@ -164,7 +171,15 @@
         #block(breakable: false)[
           #text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#entry.role]
           #h(3pt)
-          #text(font: font-sans, size: size-title, weight: "medium", fill: color-secondary)[· #entry.company]
+          #if "link" in entry and entry.link != none and entry.link != "" [
+            #let entry-url = entry.link
+            #if not entry-url.starts-with("http://") and not entry-url.starts-with("https://") {
+              entry-url = "https://" + entry-url
+            }
+            #text(font: font-sans, size: size-title, weight: "medium", fill: color-secondary)[· #link(entry-url)[#entry.company]]
+          ] else [
+            #text(font: font-sans, size: size-title, weight: "medium", fill: color-secondary)[· #entry.company]
+          ]
           #v(1.5pt)
           #meta-text[#icon-calendar #h(2pt) #entry.period #h(6pt) #icon-location #h(2pt) #entry.location]
           #v(space-tight)

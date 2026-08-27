@@ -25,13 +25,14 @@
   demonstrated: (
     "Frontend architecture and component systems with React, Next.js, and TypeScript",
     "Complex interactive systems, visual canvas editors, and drag-and-drop engines",
-    "Data visualization pipelines with 60 FPS simulations, 3D globes, and mapping (D3, Visx, Mapbox GL)",
-    "AI-integrated products with multimodal Gemini workflows, structured JSON outputs, and transient UI hydration",
+    "Data visualization pipelines with interactive graph simulations, 3D globes, and mapping (D3, Visx, Mapbox GL)",
+    "AI-integrated products with multimodal Gemini workflows, structured JSON outputs, and reactive UI hydration",
   ),
 
   // 2. Current professional focus (active hands-on engineering transition)
   current_focus: (
-    "Python development and backend services (Fastify, Express, PostgreSQL, Prisma)",
+    "Full-stack application development and backend services (Fastify, Express, PostgreSQL, Prisma)",
+    "Python programming and backend service exploration",
     "LLM application development and orchestration",
     "Structured outputs, schema-driven prompting, and validation with Zod",
     "End-to-end AI workflows integrating interactive frontends with AI service backends",
@@ -47,7 +48,7 @@
 
   // Application-tailored summaries (used optionally by targeted application variants)
   targeted_summaries: (
-    ai_native: "Frontend and product engineer expanding into AI-native application engineering. Combining proven expertise in complex interactive interfaces, state management, and data visualization with active focus on Python backend systems, LLM application orchestration, structured outputs, and reliable AI workflows.",
-    data_systems: "Frontend engineer specializing in complex interactive systems and data visualization. Proven track record architecting 60 FPS graphical simulations, visual editors, and real-time dashboards with D3, Visx, and React.",
+    ai_native: "Frontend and product engineer expanding into AI-native application engineering. Combining proven expertise in complex interactive interfaces, state management, and data visualization with active focus on Node.js/Python backend services, LLM application orchestration, structured outputs, and reliable AI workflows.",
+    data_systems: "Frontend engineer specializing in complex interactive systems and data visualization. Proven track record building fluid graphical simulations, visual editors, and real-time dashboards with D3, Visx, and React.",
   ),
 )

@@ -10,6 +10,7 @@
   title:    "Frontend Engineer",
   tagline:  "Frontend Engineer | Interactive Systems | Data Visualization | AI-Powered Experiences",
   location: "Cairo, Egypt",
+  phone:    "+1 XXX XXX XXX",
   email:    "hello@seoudy.dev",
   website:  "seoudy.dev",
   github:   "github.com/0xMohamed",
@@ -17,5 +18,5 @@
 
   // A concise professional summary.
   // Applications may override this for specific job families.
-  summary: "Frontend engineer with 4+ years of experience architecting complex interactive interfaces, visual canvas editors, and high-performance data visualizations with React, Next.js, and TypeScript. Deep expertise in frontend architecture, state management, and design systems, currently expanding into AI-native application engineering with multimodal LLM workflows, structured outputs, and Python backend services.",
+  summary: "Frontend engineer with 4+ years of experience building complex interactive interfaces, visual canvas editors, and high-performance data visualizations with React, Next.js, and TypeScript. Strong foundation in frontend architecture, state management, and design systems, with hands-on experience integrating multimodal LLM workflows, structured outputs, and Node.js backend services while actively expanding into Python and AI-native application engineering.",
 )

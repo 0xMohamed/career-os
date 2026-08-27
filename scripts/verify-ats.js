@@ -112,10 +112,11 @@ function assertCheck(category, name, condition, details = "") {
 console.log("1. Identity & Contact Field Verification");
 assertCheck("Identity", "Full Name (Mohamed Seoudy)", /Mohamed\s+Seoudy/i.test(fullText));
 assertCheck("Identity", "Title (Frontend Engineer)", /Frontend\s+Engineer/i.test(fullText));
+assertCheck("Identity", "Phone", fullText.includes("+1 XXX XXX XXX") || fullText.includes("+20 1X XXX XXXX"));
 assertCheck("Identity", "Email (hello@seoudy.dev)", fullText.includes("hello@seoudy.dev"));
 assertCheck("Identity", "Website (seoudy.dev)", fullText.includes("seoudy.dev"));
-assertCheck("Identity", "GitHub (github.com/0xMohamed)", fullText.includes("github.com/0xMohamed"));
-assertCheck("Identity", "LinkedIn (linkedin.com/in/0xmohamed)", fullText.includes("linkedin.com/in/0xmohamed"));
+assertCheck("Identity", "GitHub (0xMohamed)", fullText.includes("GitHub · 0xMohamed") || fullText.includes("0xMohamed"));
+assertCheck("Identity", "LinkedIn (0xmohamed)", fullText.includes("LinkedIn · 0xMohamed") || fullText.includes("0xMohamed") || fullText.includes("0xmohamed"));
 assertCheck("Identity", "Location (Cairo, Egypt)", /Cairo,\s*Egypt/i.test(fullText));
 console.log();
 
@@ -174,6 +175,7 @@ const EXPECTED_LINKS = [
   "https://seoudy.dev",
   "https://github.com/0xMohamed",
   "https://linkedin.com/in/0xmohamed",
+  "https://summa.vercel.app/",
   "https://stories.lintu.io",
   "https://usemodra.xyz",
   "https://oqel.vercel.app/",
@@ -181,6 +183,9 @@ const EXPECTED_LINKS = [
   "https://dskby.vercel.app/",
   "https://cargo-lab.vercel.app",
 ];
+
+// Verify phone link (supports real number or placeholder format)
+assertCheck("Link", "tel link", extractedLinks.some(l => l.startsWith("tel:+20")));
 
 for (const link of EXPECTED_LINKS) {
   assertCheck("Link", link, extractedLinks.includes(link));

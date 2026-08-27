@@ -24,7 +24,7 @@
   ),
 
   achievements: (
-    "Solely architected and engineered the frontend application, building a custom drag-and-drop block editor and modular design system.",
+    "Designed and engineered the frontend application, building a custom drag-and-drop block editor and modular design system.",
     "Implemented normalized state management using Redux Toolkit Entity Adapter and schema-validated forms with Zod.",
     "Built multi-layered interactive mapping and charting components with D3.js, Visx, and Mapbox GL.",
   ),
