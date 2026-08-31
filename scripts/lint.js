@@ -3,8 +3,8 @@
  * lint.js — Career OS lint script
  *
  * Validates the structural integrity of the content layer without rendering.
- * Checks that required content files and project files all exist and that
- * Typst can parse the entry point without compilation errors.
+ * Checks that required content files, project files, and layout templates exist,
+ * and that Typst can parse the entry points and layouts without compilation errors.
  *
  * Usage: pnpm lint
  */
@@ -33,17 +33,19 @@ const REQUIRED_FILES = [
   "projects/basira.typ",
   "projects/deskby.typ",
   "projects/cargolab.typ",
-  // Application layer
+  // Application layer (Content & positioning selection only)
   "applications/master.typ",
-  "applications/oto.typ",
-  // Template layer
+  // Template & Layout layer (Presentation concerns only)
   "templates/resume.typ",
   "templates/theme.typ",
+  "templates/layouts/editorial.typ",
+  "templates/layouts/standard.typ",
+  "templates/layouts/classic.typ",
 ];
 
 let errors = 0;
 
-console.log("Career OS — linting content structure...\n");
+console.log("Career OS — linting content & layout structure...\n");
 
 // 1. Check all required files exist
 for (const file of REQUIRED_FILES) {
@@ -58,25 +60,33 @@ for (const file of REQUIRED_FILES) {
 
 console.log();
 
-// 2. Try a dry Typst compile to catch syntax errors
-try {
-  const entry = resolve(root, "applications", "master.typ");
-  execSync(`typst compile --root "${root}" --format pdf "${entry}" /dev/null`, {
-    stdio: "pipe",
-    cwd: root,
-  });
-  console.log("  ✓ Typst syntax check passed");
-} catch (err) {
-  const output = err.stderr?.toString() || err.stdout?.toString() || String(err);
-  console.error("  ✗ Typst syntax error:\n");
-  console.error(output.trim());
-  errors++;
+// 2. Try dry Typst compiles across applications and all presentation layouts
+const testSuites = [
+  { app: "master.typ", layout: "editorial" },
+  { app: "master.typ", layout: "standard" },
+  { app: "master.typ", layout: "classic" },
+];
+
+for (const { app, layout } of testSuites) {
+  try {
+    const entry = resolve(root, "applications", app);
+    execSync(`typst compile --root "${root}" --input layout="${layout}" --format pdf "${entry}" /dev/null`, {
+      stdio: "pipe",
+      cwd: root,
+    });
+    console.log(`  ✓ Typst syntax check passed (${app} @ ${layout})`);
+  } catch (err) {
+    const output = err.stderr?.toString() || err.stdout?.toString() || String(err);
+    console.error(`  ✗ Typst syntax error in ${app} with layout ${layout}:\n`);
+    console.error(output.trim());
+    errors++;
+  }
 }
 
 console.log();
 
 if (errors === 0) {
-  console.log("✓ Lint passed — all content files present and valid.");
+  console.log("✓ Lint passed — all content and layout templates are present and valid.");
 } else {
   console.error(`✗ Lint failed — ${errors} error(s) found.`);
   process.exit(1);

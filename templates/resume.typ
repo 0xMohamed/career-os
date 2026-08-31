@@ -1,30 +1,42 @@
 // templates/resume.typ
 //
-// The resume renderer for Career OS.
+// The resume template router and shell for Career OS.
 //
-// This template receives a fully prepared `app` dictionary from the
-// application layer and renders a modern two-column editorial resume.
-//
-// It knows nothing about:
-//   - companies or job applications
-//   - project selection logic
-//   - business rules or prioritization
-//
-// It renders what it receives:
-//   - app.profile
-//   - app.experience
-//   - app.projects
-//   - app.strengths
-//   - app.education
-//   - app.skills
-//   - app.languages
+// Responsibilities:
+//   - Document metadata and page configuration
+//   - Universal typography and spacing setup
+//   - Layout dispatching based on CLI sys.inputs, app configuration, or layout parameter:
+//       • "editorial" (default / two-column) → layouts/editorial.typ
+//       • "standard"  (single-column)       → layouts/standard.typ
+//       • "classic"   (traditional single)  → layouts/classic.typ
 
 #import "theme.typ": *
+#import "layouts/editorial.typ": render-editorial
+#import "layouts/standard.typ": render-standard
+#import "layouts/classic.typ": render-classic
 
-// ── Main resume template ─────────────────────────────────────────────
-
-#let resume-template(app) = {
+#let resume-template(app, layout: "editorial") = {
   let p = app.profile
+
+  // Layout resolution priority:
+  // 1. CLI input: --input layout=<name>
+  // 2. Application dictionary: app.layout
+  // 3. Template argument: layout (default: "editorial")
+  let raw-layout = if "layout" in sys.inputs {
+    sys.inputs.at("layout")
+  } else if "layout" in app and app.layout != none and app.layout != "" {
+    app.layout
+  } else {
+    layout
+  }
+
+  let selected-layout = if raw-layout in ("classic", "traditional", "conservative", "minimal") {
+    "classic"
+  } else if raw-layout in ("standard", "one-column", "single-column", "single", "1-column") {
+    "standard"
+  } else {
+    "editorial"
+  }
 
   set document(
     title: p.name + " — Resume",
@@ -91,7 +103,7 @@
   }
 
   // ════════════════════════════════════════════════════════════════════
-  // HEADER
+  // HEADER (Shared across modern layouts: editorial & standard)
   // ════════════════════════════════════════════════════════════════════
   let display-tagline = if "tagline" in p and p.tagline != none and p.tagline != "" {
     p.tagline
@@ -99,7 +111,6 @@
     p.title
   }
 
-  // Monogram initials derivation (e.g. Mohamed Seoudy → MS)
   let name-parts = p.name.split(" ")
   let initials = if name-parts.len() >= 2 {
     name-parts.at(0).slice(0, 1) + name-parts.at(-1).slice(0, 1)
@@ -107,7 +118,7 @@
     p.name.slice(0, 1)
   }
 
-  grid(
+  let modern-header = grid(
     columns: (1fr, auto),
     gutter: 14pt,
     align: (left + horizon, right + horizon),
@@ -157,171 +168,18 @@
     ]
   )
 
-  v(3pt)
-
   // ════════════════════════════════════════════════════════════════════
-  // TWO COLUMN CONTENT LAYOUT
+  // LAYOUT DISPATCH
   // ════════════════════════════════════════════════════════════════════
-
-  let left-col = [
-    // ── EXPERIENCE ───────────────────────────────────────────────────
-    #if "experience" in app and app.experience != none and app.experience.len() > 0 [
-      #section-heading("Experience")
-      #for entry in app.experience [
-        #block(breakable: false)[
-          #text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#entry.role]
-          #h(3pt)
-          #if "link" in entry and entry.link != none and entry.link != "" [
-            #let entry-url = entry.link
-            #if not entry-url.starts-with("http://") and not entry-url.starts-with("https://") {
-              entry-url = "https://" + entry-url
-            }
-            #text(font: font-sans, size: size-title, weight: "medium", fill: color-secondary)[· #link(entry-url)[#entry.company]]
-          ] else [
-            #text(font: font-sans, size: size-title, weight: "medium", fill: color-secondary)[· #entry.company]
-          ]
-          #v(1.5pt)
-          #meta-text[#icon-calendar #h(2pt) #entry.period #h(6pt) #icon-location #h(2pt) #entry.location]
-          #v(space-tight)
-          #for hl in entry.highlights [
-            #bullet(hl)
-          ]
-          #v(space-entry)
-        ]
-      ]
-    ]
-
-    // ── PROJECTS ─────────────────────────────────────────────────────
-    #if "projects" in app and app.projects != none and app.projects.len() > 0 [
-      #section-heading("Projects")
-      #for (i, proj) in app.projects.enumerate() [
-        #block(breakable: false)[
-          #let target-link = none
-          #if "links" in proj and proj.links != none {
-            if "live" in proj.links and proj.links.live != none and proj.links.live != "" {
-              target-link = proj.links.live
-            } else if "github" in proj.links and proj.links.github != none and proj.links.github != "" {
-              target-link = proj.links.github
-            }
-          }
-          #if target-link != none {
-            let url = target-link
-            if not url.starts-with("http://") and not url.starts-with("https://") {
-              url = "https://" + url
-            }
-            link(url)[#text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#proj.title]]
-          } else {
-            text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#proj.title]
-          }
-          #v(1pt)
-          #meta-text[#icon-calendar #h(2pt) #proj.period]
-          #v(1.5pt)
-          #text(size: size-body, fill: color-secondary)[#proj.summary]
-          #v(space-tight)
-          #let top-achievements = proj.achievements.slice(0, calc.min(2, proj.achievements.len()))
-          #for bullet-item in top-achievements [
-            #bullet(bullet-item)
-          ]
-          #if i < app.projects.len() - 1 [
-            #dotted-divider()
-          ]
-        ]
-      ]
-    ]
-  ]
-
-  let right-col = [
-    // ── SUMMARY ──────────────────────────────────────────────────────
-    #if "summary" in p and p.summary != none and p.summary != "" [
-      #section-heading("Summary")
-      #text(
-        size: size-body,
-        fill: color-secondary,
-        p.summary,
-      )
-    ]
-
-    // ── KEY STRENGTHS ────────────────────────────────────────────────
-    #if "strengths" in app and app.strengths != none and app.strengths.len() > 0 [
-      #section-heading("Key Strengths")
-      #for (i, s) in app.strengths.enumerate() [
-        #block(breakable: false)[
-          #grid(
-            columns: (10pt, 1fr),
-            gutter: 2pt,
-            align: (top + left, top + left),
-            icon-gem,
-            [
-              #text(font: font-sans, size: size-body, weight: "bold", fill: color-ink)[#s.title] \
-              #v(0.5pt)
-              #text(size: size-small, fill: color-secondary)[#s.description]
-            ]
-          )
-          #if i < app.strengths.len() - 1 [
-            #dotted-divider()
-          ]
-        ]
-      ]
-    ]
-
-    // ── EDUCATION ────────────────────────────────────────────────────
-    #if "education" in app and app.education != none and app.education.len() > 0 [
-      #section-heading("Education")
-      #for entry in app.education [
-        #block(breakable: false)[
-          #text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#entry.degree] \
-          #v(1pt)
-          #text(font: font-sans, size: size-body, weight: "semibold", fill: color-accent)[#entry.institution] \
-          #v(1pt)
-          #meta-text[#icon-calendar #h(2pt) #entry.period]
-          #v(space-entry)
-        ]
-      ]
-    ]
-
-    // ── SKILLS ───────────────────────────────────────────────────────
-    #if "skills" in app and app.skills != none and app.skills.len() > 0 [
-      #section-heading("Skills")
-      #for (i, group) in app.skills.enumerate() [
-        #block(breakable: false)[
-          #text(font: font-sans, size: size-body, weight: "bold", fill: color-accent)[#group.category]
-          #v(1.5pt)
-          #par(leading: 0.6em)[
-            #for skill in group.items [
-              #box(
-                inset: (x: 3pt, top: 0.5pt, bottom: 1.5pt),
-                stroke: (bottom: 0.6pt + color-underline),
-                text(font: font-sans, size: size-small, weight: "medium", fill: color-ink)[#skill]
-              )
-              #h(2.5pt)
-            ]
-          ]
-          #if i < app.skills.len() - 1 [
-            #dotted-divider()
-          ]
-        ]
-      ]
-    ]
-
-    // ── LANGUAGES ────────────────────────────────────────────────────
-    #if "languages" in app and app.languages != none and app.languages.len() > 0 [
-      #section-heading("Languages")
-      #for (i, lang) in app.languages.enumerate() [
-        #block(breakable: false)[
-          #text(font: font-sans, size: size-body, weight: "bold", fill: color-ink)[#lang.name] \
-          #text(font: font-sans, size: size-small, fill: color-muted)[#lang.level]
-          #if i < app.languages.len() - 1 [
-            #dotted-divider()
-          ]
-        ]
-      ]
-    ]
-  ]
-
-  grid(
-    columns: (58%, 1fr),
-    gutter: 15pt,
-    left-col,
-    right-col,
-  )
+  if selected-layout == "classic" {
+    render-classic(app, p, section-heading, meta-text, dotted-divider, bullet)
+  } else if selected-layout == "standard" {
+    modern-header
+    v(3pt)
+    render-standard(app, p, section-heading, meta-text, dotted-divider, bullet)
+  } else {
+    modern-header
+    v(3pt)
+    render-editorial(app, p, section-heading, meta-text, dotted-divider, bullet)
+  }
 }

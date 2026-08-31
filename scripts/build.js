@@ -2,11 +2,13 @@
 /**
  * build.js — Career OS build script
  *
- * Compiles a specific application (default: master.typ) into the output folder via Typst.
+ * Compiles applications through specific presentation layouts into output PDFs.
  *
  * Usage:
- *   pnpm build          # compiles applications/master.typ → output/resume.pdf
- *   pnpm build -- oto   # compiles applications/oto.typ → output/oto.pdf
+ *   pnpm build                     # compiles master.typ @ editorial → output/resume.pdf
+ *   pnpm build -- master standard  # compiles master.typ @ standard  → output/single.pdf
+ *   pnpm build -- master classic   # compiles master.typ @ classic   → output/classic.pdf
+ *   pnpm build:all                 # compiles master across all 3 layouts (editorial, standard, classic)
  */
 
 import { execSync } from "child_process";
@@ -23,32 +25,64 @@ if (!existsSync(outputDir)) {
   mkdirSync(outputDir, { recursive: true });
 }
 
-// Determine target application and output file (filter out '--' prefix passed by package managers)
+// Parse arguments (filtering package manager '--')
 const args = process.argv.slice(2).filter(arg => arg !== "--");
-const target = args[0] || "master";
-const entry = resolve(root, "applications", `${target}.typ`);
-const outName = target === "master" ? "resume.pdf" : `${target}.pdf`;
-const out = resolve(outputDir, outName);
+const firstArg = args[0] || "master";
+const secondArg = args[1] || "editorial";
 
-if (!existsSync(entry)) {
-  console.error(`\n✗ Error: Application file not found: applications/${target}.typ`);
-  process.exit(1);
+let buildJobs = [];
+
+if (firstArg === "all") {
+  buildJobs = [
+    { app: "master", layout: "editorial", outName: "resume.pdf" },
+    { app: "master", layout: "standard",  outName: "single.pdf" },
+    { app: "master", layout: "classic",   outName: "classic.pdf" },
+  ];
+} else {
+  const app = firstArg;
+  const layout = secondArg;
+  let outName = `${app}.pdf`;
+  if (app === "master" && layout === "editorial") {
+    outName = "resume.pdf";
+  } else if (app === "master" && (layout === "standard" || layout === "single-column" || layout === "one-column")) {
+    outName = "single.pdf";
+  } else if (app === "master" && (layout === "classic" || layout === "traditional")) {
+    outName = "classic.pdf";
+  } else if (layout !== "editorial") {
+    outName = `${app}-${layout}.pdf`;
+  }
+  buildJobs = [{ app, layout, outName }];
 }
 
-console.log("Career OS — building resume...");
-console.log(`  Entry : applications/${target}.typ`);
-console.log(`  Output: output/${outName}`);
-console.log();
+console.log("Career OS — building resume artifacts...\n");
 
-try {
-  // --root tells Typst the project boundary, allowing imports across
-  // subdirectories (content/, projects/, templates/) without escaping the sandbox.
-  execSync(`typst compile --root "${root}" "${entry}" "${out}"`, {
-    stdio: "inherit",
-    cwd: root,
-  });
-  console.log(`\n✓ Build complete → output/${outName}`);
-} catch {
-  console.error("\n✗ Build failed. Is Typst installed? Run: brew install typst");
-  process.exit(1);
+let successCount = 0;
+
+for (const { app, layout, outName } of buildJobs) {
+  const entry = resolve(root, "applications", `${app}.typ`);
+  const out = resolve(outputDir, outName);
+
+  if (!existsSync(entry)) {
+    console.error(`✗ Error: Application file not found: applications/${app}.typ`);
+    process.exit(1);
+  }
+
+  console.log(`  Application : applications/${app}.typ`);
+  console.log(`  Layout      : ${layout}`);
+  console.log(`  Output      : output/${outName}`);
+
+  try {
+    execSync(`typst compile --root "${root}" --input layout="${layout}" "${entry}" "${out}"`, {
+      stdio: "pipe",
+      cwd: root,
+    });
+    console.log(`  ✓ Build complete → output/${outName}\n`);
+    successCount++;
+  } catch (err) {
+    const output = err.stderr?.toString() || err.stdout?.toString() || String(err);
+    console.error(`\n✗ Build failed for ${app} with layout ${layout}:\n${output.trim()}`);
+    process.exit(1);
+  }
 }
+
+console.log(`✓ ${successCount} resume artifact(s) generated successfully.`);

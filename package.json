@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "node scripts/build.js",
+    "build:all": "node scripts/build.js all",
     "watch": "node scripts/watch.js",
     "lint": "node scripts/lint.js",
     "test:ats": "node scripts/verify-ats.js",
