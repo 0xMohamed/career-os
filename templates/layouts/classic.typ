@@ -57,9 +57,9 @@
   }
 
   // ════════════════════════════════════════════════════════════════════
-  // CLASSIC CENTERED HEADER
+  // CLASSIC HEADER (LEFT-ALIGNED)
   // ════════════════════════════════════════════════════════════════════
-  let classic-header = align(center)[
+  let classic-header = [
     #text(
       font: font-sans,
       size: size-name,
@@ -192,22 +192,6 @@
           ]
         ]
       ]
-    ]
-
-    // ── KEY STRENGTHS ────────────────────────────────────────────────
-    #if "strengths" in app and app.strengths != none and app.strengths.len() > 0 [
-      #classic-heading("Key Strengths")
-      #grid(
-        columns: (1fr, 1fr),
-        gutter: 12pt,
-        ..app.strengths.map(s => [
-          #block(breakable: false)[
-            #text(font: font-sans, size: size-body, weight: "bold", fill: color-ink)[#s.title] \
-            #v(0.5pt)
-            #text(size: size-small, fill: color-secondary)[#s.description]
-          ]
-        ])
-      )
     ]
 
     // ── SKILLS ───────────────────────────────────────────────────────

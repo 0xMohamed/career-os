@@ -150,7 +150,7 @@ for i in 0..<doc.pageCount {
     "EXPERIENCE",
     "PROJECTS",
     "SUMMARY",
-    "KEY STRENGTHS",
+    ...(pdfName !== "classic.pdf" ? ["KEY STRENGTHS"] : []),
     "EDUCATION",
     "SKILLS",
     "LANGUAGES",
