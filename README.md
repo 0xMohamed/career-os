@@ -2,7 +2,7 @@
 
 > A personal career operating system. One source of truth. Multiple outputs.
 
-Career OS stores professional information once and generates multiple outputs from it. Today, the only output is a Resume PDF. The same source of truth is designed to generate cover letters, portfolios, personal websites, LinkedIn summaries, and more — without ever duplicating content.
+Career OS stores professional career data once and generates tailored outputs from it. Today, the primary output is an ATS-compliant, print-ready Resume PDF. The same source of truth is designed to generate cover letters, portfolios, personal websites, and LinkedIn summaries — without ever duplicating content.
 
 The Resume is only one renderer. Typst is only the first rendering engine.
 
@@ -10,33 +10,33 @@ The Resume is only one renderer. Typst is only the first rendering engine.
 
 ## Vision
 
-Career information should never be duplicated.
+Career information should never be duplicated:
 
 - Projects should only be described once.
 - Experience should only be written once.
 - Skills should only exist once.
 - Presentation must always be separated from content.
 
-If Typst disappeared tomorrow, the content architecture should survive.
+If Typst disappeared tomorrow, the core content architecture survives untouched.
 
 ---
 
 ## Architecture
 
-The system is organized as a layered pipeline. Dependencies only flow downward.
+The system is organized as a layered pipeline. Dependencies only flow downward:
 
 ```
-projects/    ←  Reusable professional assets (what each project IS)
+projects/     ←  Reusable professional assets (what each project IS)
     ↓
-content/     ←  Personal information (profile, experience, education, languages, skills)
+content/      ←  Universal personal information (profile, experience, education, languages, skills)
     ↓
-profiles/    ←  Job family composition (inactive in Phase 1)
+profiles/     ←  Job family composition (Phase 2)
     ↓
-applications/ ← Specific job application composition (what to include, in what order)
+applications/ ←  Specific job application composition (what to include, in what order, overrides)
     ↓
-templates/   ←  Rendering (only receives prepared data, knows nothing about content)
+templates/    ←  Rendering & layouts (receives prepared data, presentation only)
     ↓
-output/      ←  Generated artifacts (resume.pdf)
+output/       ←  Generated artifacts (resume.pdf, resume-siemens.pdf)
 ```
 
 ### Layer Responsibilities
@@ -44,10 +44,11 @@ output/      ←  Generated artifacts (resume.pdf)
 | Layer | Responsibility | Knows about |
 |---|---|---|
 | `projects/` | What each project IS | Technologies, achievements, links, metadata |
-| `content/` | Personal information | Profile, experience, education, languages, skills |
-| `profiles/` | Job family composition (Phase 2) | Project ordering, skill emphasis |
-| `applications/` | Specific job application | Which content, which projects, which skills |
-| `templates/` | Rendering only | Receiving prepared data, visual layout |
+| `content/` | Universal personal information | Profile, experience, education, languages, skills, career trajectory |
+| `profiles/` | Job family composition (Phase 2) | Project ordering, skill emphasis across a discipline |
+| `applications/` | Specific job application | Selection, ordering, tailored overrides, layout choice |
+| `templates/` | Rendering engine | Layout templates, design tokens, typography |
+| `scripts/` | Dynamic build & validation tooling | Generic discovery, compilation, linting, and ATS tests |
 | `output/` | Generated artifacts | Nothing — write-only |
 
 ---
@@ -59,46 +60,66 @@ career/
 ├── README.md          # Project documentation
 ├── CHANGELOG.md       # Release and version history
 ├── LICENSE            # MIT License
-├── package.json       # Project version & script workflows
+├── package.json       # Tooling scripts and engine definitions
 │
-├── projects/          # Reusable professional assets
+├── projects/          # Reusable professional assets (Source of Truth)
 │   ├── lintu.typ
 │   ├── modra.typ
 │   ├── oqel.typ
 │   ├── basira.typ
-│   └── deskby.typ
+│   ├── deskby.typ
+│   └── cargolab.typ
 │
-├── content/           # Personal information (Single Source of Truth)
+├── content/           # Universal personal information (Source of Truth)
 │   ├── profile.typ    # Identity & contact details
 │   ├── experience.typ # Employment history & highlights
 │   ├── education.typ  # Academic background
 │   ├── languages.typ  # Language proficiencies
-│   └── skills.typ     # Technical skill categorization
+│   ├── skills.typ     # Technical skill categorization
+│   ├── strengths.typ  # Core engineering competencies
+│   └── career-direction.typ # Strategic positioning & targeted summaries
 │
 ├── profiles/          # Job family composition (Phase 2)
 │   └── README.md
 │
-├── applications/      # Specific job applications
-│   └── oto.typ        # Active application entry point
+├── applications/      # Specific application compositions
+│   ├── master.typ     # Canonical master resume
+│   └── siemens.typ    # Tailored Siemens application variant
 │
-├── templates/         # Rendering engine
-│   ├── resume.typ     # PDF layout template
-│   └── theme.typ      # Colors, typography & spacing tokens
+├── templates/         # Rendering engine & layouts
+│   ├── resume.typ     # Template entry & layout dispatcher
+│   ├── theme.typ      # Design tokens (colors, typography, spacing)
+│   └── layouts/       # Presentation layouts
+│       ├── editorial.typ # Modern two-column layout
+│       ├── standard.typ  # Clean single-column layout
+│       └── classic.typ   # Conservative monochrome single-column layout
 │
-├── scripts/           # Build & validation tooling
-│   ├── build.js       # Typst compile wrapper with --root setup
-│   ├── watch.js       # Live reloading typst watcher
-│   └── lint.js        # File presence & syntax validator
+├── scripts/           # Generic build & test tooling
+│   ├── config.js      # Shared paths & dynamic discovery helpers
+│   ├── build.js       # Generic Typst compiler
+│   ├── watch.js       # Live-reloading watcher
+│   ├── lint.js        # Dynamic content & syntax validator
+│   └── verify-ats.js  # Generic ATS compatibility test suite
 │
-├── assets/            # Static assets (avatars, logos)
-└── output/            # Generated artifacts (git-ignored)
+├── assets/            # Static assets (logos, avatars)
+└── output/            # Generated PDF artifacts (git-ignored)
 ```
+
+---
+
+## Layout Options
+
+Career OS provides three built-in layout engines out of the box:
+
+1. **`editorial`** (Default): Modern two-column layout with visual accents, monogram initials badge, and balanced parallel sidebars. Best for creative, product, and modern tech roles.
+2. **`standard`**: Modern full-width single-column layout with clean horizontal divider rules, high-density 2-column competencies grid, and tabular skills matrix.
+3. **`classic`**: Conservative, traditional monochrome single-column layout with standard text delimiters, left-aligned header, and zero decorative color treatment. Designed for maximum ATS parsing certainty in traditional enterprise environments.
 
 ---
 
 ## Typst Setup
 
-Typst is the rendering engine for Phase 1. It is a modern, fast typesetting system.
+Typst is the rendering engine. It is a modern, fast typesetting system written in Rust.
 
 ### macOS (Homebrew)
 ```bash
@@ -110,7 +131,7 @@ brew install typst
 winget install --id Typst.Typst
 ```
 
-### Cargo (cross-platform)
+### Cargo (Cross-platform)
 ```bash
 cargo install typst-cli
 ```
@@ -124,58 +145,94 @@ typst --version
 
 ## Development Workflow
 
-### Install (no dependencies in Phase 1)
+### Install
 ```bash
 pnpm install
 ```
 
-### Build resume PDF
+### Build Resumes
+
 ```bash
+# Compile canonical resume (master @ editorial) → output/resume.pdf
 pnpm build
-# → compiles applications/master.typ → output/resume.pdf (default)
 
-pnpm build -- oto
-# → compiles applications/oto.typ → output/oto.pdf
+# Compile all applications and all layout variants
+pnpm build:all
+
+# Compile a specific application using its default layout
+pnpm build -- siemens
+# → compiles applications/siemens.typ → output/resume-siemens.pdf
+
+# Compile an application with a specific layout override
+pnpm build -- master standard
+# → compiles applications/master.typ @ standard → output/single.pdf
+
+pnpm build -- master classic
+# → compiles applications/master.typ @ classic → output/classic.pdf
 ```
 
-### Watch for live recompile
+### Watch Mode (Live Recompile)
+
 ```bash
+# Watch canonical master resume
 pnpm watch
-# → watches applications/master.typ → output/resume.pdf (default)
 
-pnpm watch -- oto
-# → watches applications/oto.typ → output/oto.pdf
+# Watch a specific application variant
+pnpm watch -- siemens
 ```
 
-### Lint content structure
+### Lint & Structural Validation
+
+Checks that all core content, template, project, and application files exist, and dry-compiles all discovered applications to ensure zero syntax errors:
+
 ```bash
 pnpm lint
-# Checks all required files exist + Typst syntax validation
 ```
 
-### Clean output
+### ATS Compatibility Verification
+
+Runs cross-platform PDF text extraction, contact validation, structural heading checks, technical keyword verification, and hyperlink checks using Mozilla's `pdfjs-dist` (pure Node.js, zero macOS/Swift dependencies):
+
+```bash
+# Verify all generated PDFs
+pnpm test:ats
+
+# Verify a specific application or PDF
+node scripts/verify-ats.js siemens
+node scripts/verify-ats.js resume.pdf
+```
+
+### Phone Privacy & Contact Configuration
+
+By default, Career OS compiles resumes with a safe placeholder so personal phone numbers are never committed to public repositories.
+
+To inject your real phone number into the generated output:
+
+1. **Environment Variable (Recommended):**
+   ```bash
+   CAREER_PHONE="+1 555 123 4567" pnpm build:all
+   ```
+2. **Local Config (`private.json`):**
+   Create a local, git-ignored `private.json` in the project root:
+   ```json
+   {
+     "phone": "+1 555 123 4567"
+   }
+   ```
+   The build and watch scripts automatically read this file if present.
+
+### Clean Output
+
 ```bash
 pnpm clean
 ```
 
 ---
 
-## Design Principles
-
-1. **Single Source of Truth** — Content is written once, never duplicated.
-2. **Separation of Concerns** — Content, composition, and rendering are strictly separated.
-3. **Content over Presentation** — What you did matters more than how it looks.
-4. **Renderer Independence** — Typst is a plugin, not a dependency.
-5. **Modularity** — Each layer has one responsibility.
-6. **Simplicity First** — If something isn't needed today, don't build it.
-7. **Extensible by Design** — The architecture can evolve without rewriting.
-
----
-
 ## How to Add a New Project
 
-1. Create `projects/your-project.typ`
-2. Expose the structured dictionary following the enriched schema:
+1. Create `projects/your-project.typ`.
+2. Export a structured dictionary following the project schema:
    ```typst
    #let your-project = (
      title: "...",
@@ -189,79 +246,73 @@ pnpm clean
      technologies: ("...", "..."),
      achievements: ("...", "..."),
      tags: ("...", "..."),
-     links: (live: "...", github: "...")
+     links: (live: "...", github: "..."),
    )
    ```
-3. Import it in `applications/master.typ` and any relevant custom applications (e.g. `applications/oto.typ`).
-4. Add it to the `projects` array in the application composition.
-5. Run `pnpm build` to compile the default resume.
+3. Import the project in `applications/master.typ` (and any tailored application that requires it).
+4. Run `pnpm lint` and `pnpm build`.
 
 ---
 
-## How to Create a New Application
+## How to Create a New Application Variant
 
-A new application represents a specific job application or target audience.
+A new application represents a specific job application or target company.
 
-- **master.typ** is the canonical resume generated by the repository.
-- Every other application is a **lightweight customization** for a specific opportunity.
-- Applications should **never duplicate project or content data**; they should only import and orchestrate.
+Applications are **configuration-driven and automatically discovered**:
+- You do **not** need to edit `scripts/build.js`, `scripts/lint.js`, or `scripts/verify-ats.js`.
+- Simply creating `applications/<name>.typ` automatically registers it with the entire build, lint, watch, and ATS test pipeline.
 
-1. Create `applications/new-job.typ`
-2. Import content and projects from the layers above.
-3. Compose the `app` dictionary (select projects, set skill categories, or override summary).
-4. Pass `app` to `#resume-template(app)`.
-5. Compile the application:
+### Steps:
+
+1. Create `applications/<company>.typ` (e.g. `applications/stripe.typ`).
+2. Import canonical content and projects:
+   ```typst
+   #import "../content/profile.typ": profile
+   #import "../content/experience.typ": experience
+   #import "../content/education.typ": education
+   #import "../content/languages.typ": languages
+   #import "../content/skills.typ": skills
+   #import "../projects/lintu.typ": lintu
+   #import "../projects/modra.typ": modra
+   ```
+3. Compose the application:
+   ```typst
+   #let app = (
+     layout: "classic", // "editorial" | "standard" | "classic"
+     profile: (..profile, tagline: "Tailored Headline"),
+     projects: (lintu, modra),
+     experience: experience,
+     education: education,
+     languages: languages,
+     skills: skills,
+   )
+
+   #import "../templates/resume.typ": resume-template
+   #resume-template(app, layout: "classic")
+   ```
+4. Build and verify:
    ```bash
-   pnpm build -- new-job
-   # → compiles applications/new-job.typ → output/new-job.pdf
+   pnpm build -- stripe
+   # → generates output/resume-stripe.pdf
+
+   node scripts/verify-ats.js stripe
+   # → verifies ATS extractability
    ```
 
 ---
 
-## PDF Metadata Support & Limitations
+## Design Principles
 
-When compiling, Typst automatically embeds metadata into the generated PDF headers. Currently, the following fields are defined in the template:
-- **Title**: `Career OS Resume`
-- **Author**: `Mohamed Sayed Seoudy`
-- **Keywords**: `Frontend, React, TypeScript, TanStack, Redux Toolkit, Data Visualization`
-
-> [!NOTE]
-> **Typst Metadata Limitations**: Typst's `#set document()` rule natively supports `title`, `author`, `keywords`, and `date` configurations. It does not support a dedicated `subject` field. The subject description has been integrated into the `title` and `keywords` metadata to optimize searchability.
-
----
-
-## The Profiles Layer (Phase 2)
-
-The `profiles/` layer is intentionally empty in Phase 1.
-
-Profiles will be introduced when a second application exists with meaningfully different composition requirements (e.g., frontend-focused vs. systems-focused). At that point, shared composition logic can be extracted from applications into reusable profile files.
-
-See [`profiles/README.md`](profiles/README.md) for full intent documentation.
+1. **Single Source of Truth** — Content is written once, never duplicated.
+2. **Separation of Concerns** — Universal content, application composition, and presentation templates are strictly segregated.
+3. **Zero Hardcoded Registry** — Applications and projects are discovered dynamically from the filesystem.
+4. **Content over Presentation** — What you built and delivered matters more than decorative styling.
+5. **Renderer Independence** — Typst is a rendering plugin; the content architecture survives even if the typesetting engine changes.
+6. **Simplicity First** — Avoid enterprise over-engineering; build clean, predictable, extensible conventions.
+7. **Zero Hallucination** — Resumes represent 100% verified, documented technical accomplishments.
 
 ---
 
-## Future Roadmap
+## License
 
-The architecture is open for these future outputs. None of these are implemented.
-
-- [ ] Cover Letter generator
-- [ ] Portfolio page generator
-- [ ] Personal website generator
-- [ ] LinkedIn About section generator
-- [ ] HTML renderer (alternative to Typst)
-- [ ] Markdown renderer
-- [ ] CLI interface
-- [ ] AI-assisted application customization
-- [ ] Multiple themes
-- [ ] Application history and versioning
-
----
-
-## Philosophy
-
-> Avoid premature abstractions.  
-> Avoid enterprise architecture.  
-> Avoid solving future problems today.  
-> Prefer evolution over speculation.  
-
-Every abstraction in this repository exists because there was a concrete need for it — not because it might be useful someday.
+[MIT](LICENSE) © 2026 Mohamed Sayed Seoudy

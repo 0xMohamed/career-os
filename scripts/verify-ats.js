@@ -2,117 +2,135 @@
 /**
  * verify-ats.js — Career OS ATS Compatibility Verification Script
  *
- * This script verifies ATS compatibility of the compiled resume PDF:
- *   1. Full text extraction via native PDFKit (no OCR, no rasterized text).
- *   2. Presence and extractability of required identity and contact fields.
- *   3. Presence and extractability of standard structural resume headings.
- *   4. Extractability of representative technical keywords.
- *   5. Presence of interactive hyperlink annotations.
- *   6. Analysis of logical reading order in the two-column PDF stream.
+ * Truly cross-platform ATS verification (macOS, Linux, Windows) powered by Mozilla pdfjs-dist:
+ *   1. Full text extraction via pure JavaScript (no OCR, no Swift/macOS dependency).
+ *   2. Universal identity and contact fields.
+ *   3. Universal standard structural resume headings.
+ *   4. Technical keywords extractability.
+ *   5. Interactive hyperlink annotations.
+ *   6. Stream reading order & semantic sequence analysis.
  *
  * Usage:
- *   node scripts/verify-ats.js
- *   pnpm run test:ats
+ *   node scripts/verify-ats.js                 # verifies all generated resume PDFs
+ *   node scripts/verify-ats.js resume.pdf      # verifies specific PDF
+ *   node scripts/verify-ats.js siemens         # verifies specific application
  */
 
 import { execSync } from "child_process";
-import { existsSync } from "fs";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
+import { existsSync, readFileSync } from "fs";
+import { resolve } from "path";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import { root, paths, getBuildJobs } from "./config.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = resolve(__dirname, "..");
-const args = process.argv.slice(2).filter(arg => arg !== "--");
+const args = process.argv.slice(2).filter((arg) => arg !== "--");
 const rawTarget = args[0];
 
 let targetPdfNames = [];
 if (rawTarget) {
-  const norm = rawTarget.endsWith(".pdf") ? rawTarget : `${rawTarget}.pdf`;
-  targetPdfNames = [norm === "master.pdf" ? "resume.pdf" : norm];
+  if (rawTarget.endsWith(".pdf")) {
+    targetPdfNames = [rawTarget];
+  } else {
+    // Resolve application jobs
+    try {
+      const jobs = getBuildJobs(rawTarget);
+      targetPdfNames = jobs.map((j) => j.outName);
+    } catch {
+      targetPdfNames = [`resume-${rawTarget}.pdf`];
+    }
+  }
 } else {
-  targetPdfNames = ["resume.pdf", "single.pdf", "classic.pdf"];
+  // Default: verify all configured build artifacts
+  const allJobs = getBuildJobs("all");
+  targetPdfNames = allJobs.map((j) => j.outName);
 }
 
 let totalAllPassed = 0;
 let totalAllFailed = 0;
 
 for (const pdfName of targetPdfNames) {
-  const pdfPath = resolve(root, "output", pdfName);
+  const pdfPath = resolve(paths.output, pdfName);
 
   console.log("=================================================");
   console.log(` ATS Verification: output/${pdfName}`);
   console.log("=================================================\n");
 
   if (!existsSync(pdfPath)) {
-    console.log(`Target PDF output/${pdfName} not found. Compiling output/${pdfName} first...`);
+    console.log(
+      `Target PDF output/${pdfName} not found. Compiling output/${pdfName} first...`,
+    );
     try {
-      if (pdfName === "single.pdf") {
-        execSync(`node scripts/build.js master standard`, { cwd: root, stdio: "inherit" });
-      } else if (pdfName === "classic.pdf") {
-        execSync(`node scripts/build.js master classic`, { cwd: root, stdio: "inherit" });
+      const allJobs = getBuildJobs("all");
+      const matchedJob = allJobs.find((j) => j.outName === pdfName);
+      if (matchedJob) {
+        execSync(
+          `node scripts/build.js ${matchedJob.app} ${matchedJob.layout}`,
+          { cwd: root, stdio: "inherit" },
+        );
       } else {
-        const appName = pdfName === "resume.pdf" ? "master" : pdfName.replace(".pdf", "");
-        execSync(`node scripts/build.js ${appName}`, { cwd: root, stdio: "inherit" });
+        const fallbackApp = pdfName
+          .replace(/^resume-/, "")
+          .replace(/\.pdf$/, "");
+        execSync(`node scripts/build.js ${fallbackApp}`, {
+          cwd: root,
+          stdio: "inherit",
+        });
       }
     } catch (err) {
-      console.error(`✗ Failed to compile ${pdfName}.`);
+      console.error(`✗ Failed to compile ${pdfName}:`, err.message);
       process.exit(1);
     }
   }
 
-  // ── 1. Native PDF Text & Annotation Extraction via Swift PDFKit ───────
+  // ── 1. Pure JS PDF Text & Annotation Extraction via pdfjs-dist ────────
   let extractedPages = [];
   let extractedLinks = [];
 
   try {
-    const swiftCode = `
-import PDFKit
-import Foundation
+    const data = new Uint8Array(readFileSync(pdfPath));
+    const doc = await pdfjsLib.getDocument({
+      data,
+      useSystemFonts: true,
+      disableFontFace: true,
+    }).promise;
 
-let url = URL(fileURLWithPath: "${pdfPath}")
-guard let doc = PDFDocument(url: url) else {
-    fputs("ERR_LOAD", stderr)
-    exit(1)
-}
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const textContent = await page.getTextContent();
 
-print("PAGE_COUNT:\\(doc.pageCount)")
-for i in 0..<doc.pageCount {
-    guard let page = doc.page(at: i) else { continue }
-    print("---PAGE_START:\\(i+1)---")
-    print(page.string ?? "")
-    print("---PAGE_END---")
-    for ann in page.annotations {
-        if let linkUrl = ann.url?.absoluteString {
-            print("LINK_URL:\\(linkUrl)")
+      // Reconstruct text lines preserving physical reading stream
+      let lastY = null;
+      let pageLines = [];
+      let currentLine = "";
+
+      for (const item of textContent.items) {
+        if (!item.str) continue;
+        const y = item.transform[5];
+        if (lastY !== null && Math.abs(y - lastY) > 2) {
+          if (currentLine) pageLines.push(currentLine.trim());
+          currentLine = item.str;
+        } else {
+          currentLine += (currentLine ? " " : "") + item.str;
         }
-    }
-}
-`;
+        lastY = y;
+      }
+      if (currentLine) pageLines.push(currentLine.trim());
 
-    const output = execSync(`swift -e '${swiftCode.replace(/'/g, "'\\''")}'`, {
-      encoding: "utf8",
-      stdio: ["pipe", "pipe", "pipe"],
-    });
+      extractedPages.push(pageLines.join("\n"));
 
-    const lines = output.split("\n");
-    let currentPageText = [];
-    let capturing = false;
-
-    for (const line of lines) {
-      if (line.startsWith("---PAGE_START:")) {
-        capturing = true;
-        currentPageText = [];
-      } else if (line.startsWith("---PAGE_END---")) {
-        capturing = false;
-        extractedPages.push(currentPageText.join("\n"));
-      } else if (capturing) {
-        currentPageText.push(line);
-      } else if (line.startsWith("LINK_URL:")) {
-        extractedLinks.push(line.replace("LINK_URL:", "").trim());
+      // Extract interactive link annotations
+      const annots = await page.getAnnotations();
+      for (const annot of annots) {
+        const link =
+          annot.url ||
+          annot.unsafeUrl ||
+          (annot.dest ? String(annot.dest) : null);
+        if (link) {
+          extractedLinks.push(link.trim());
+        }
       }
     }
   } catch (err) {
-    console.error("✗ Error extracting PDF stream via PDFKit:", err.message);
+    console.error("✗ Error extracting PDF stream via pdfjs-dist:", err.message);
     process.exit(1);
   }
 
@@ -126,44 +144,84 @@ for i in 0..<doc.pageCount {
       passed++;
       totalAllPassed++;
     } else {
-      console.error(`  ✗ [${category}] ${name} ${details ? `— ${details}` : ""}`);
+      console.error(
+        `  ✗ [${category}] ${name} ${details ? `— ${details}` : ""}`,
+      );
       failed++;
       totalAllFailed++;
     }
   }
 
-  // ── 2. Identity & Contact Verification ────────────────────────────────
+  // ── 2. Universal Identity & Contact Verification ──────────────────────
   console.log("1. Identity & Contact Field Verification");
-  assertCheck("Identity", "Full Name (Mohamed Seoudy)", /Mohamed\s+Seoudy/i.test(fullText));
-  assertCheck("Identity", "Title (Frontend Engineer)", /Frontend\s+Engineer/i.test(fullText));
-  assertCheck("Identity", "Phone", fullText.includes("+1 XXX XXX XXX") || fullText.includes("+20 1X XXX XXXX"));
-  assertCheck("Identity", "Email (hello@seoudy.dev)", fullText.includes("hello@seoudy.dev"));
-  assertCheck("Identity", "Website (seoudy.dev)", fullText.includes("seoudy.dev"));
-  assertCheck("Identity", "GitHub (0xMohamed)", fullText.includes("GitHub · 0xMohamed") || fullText.includes("0xMohamed"));
-  assertCheck("Identity", "LinkedIn (0xmohamed)", fullText.includes("LinkedIn · 0xMohamed") || fullText.includes("0xMohamed") || fullText.includes("0xmohamed"));
-  assertCheck("Identity", "Location (Cairo, Egypt)", /Cairo,\s*Egypt/i.test(fullText));
+  assertCheck(
+    "Identity",
+    "Full Name (Mohamed Seoudy)",
+    /Mohamed\s+Seoudy/i.test(fullText),
+  );
+  assertCheck(
+    "Identity",
+    "Title (Frontend Engineer)",
+    /Frontend\s+Engineer/i.test(fullText),
+  );
+  assertCheck(
+    "Identity",
+    "Phone",
+    fullText.includes("+1 XXX XXX XXX") || /\+1\s*\d/.test(fullText),
+  );
+  assertCheck(
+    "Identity",
+    "Email (hello@seoudy.dev)",
+    fullText.includes("hello@seoudy.dev"),
+  );
+  assertCheck(
+    "Identity",
+    "Website (seoudy.dev)",
+    fullText.includes("seoudy.dev"),
+  );
+  assertCheck(
+    "Identity",
+    "GitHub (0xMohamed)",
+    fullText.includes("GitHub · 0xMohamed") || fullText.includes("0xMohamed"),
+  );
+  assertCheck(
+    "Identity",
+    "LinkedIn (0xmohamed)",
+    fullText.includes("LinkedIn · 0xMohamed") ||
+      fullText.includes("0xMohamed") ||
+      fullText.includes("0xmohamed"),
+  );
+  assertCheck(
+    "Identity",
+    "Location (Cairo, Egypt)",
+    /Cairo,\s*Egypt/i.test(fullText),
+  );
   console.log();
 
-  // ── 3. Structural Headings Verification ────────────────────────────────
+  // ── 3. Universal Structural Headings Verification ─────────────────────
   console.log("2. Standard Structural Headings Verification");
-  const REQUIRED_HEADINGS = [
+  const UNIVERSAL_HEADINGS = [
     "EXPERIENCE",
     "PROJECTS",
     "SUMMARY",
-    ...(pdfName !== "classic.pdf" ? ["KEY STRENGTHS"] : []),
     "EDUCATION",
     "SKILLS",
     "LANGUAGES",
   ];
 
-  for (const heading of REQUIRED_HEADINGS) {
+  for (const heading of UNIVERSAL_HEADINGS) {
     assertCheck("Heading", heading, fullText.includes(heading));
+  }
+
+  // Conditionally verify optional sections if present
+  if (fullText.includes("KEY STRENGTHS")) {
+    assertCheck("Heading", "KEY STRENGTHS (optional layout section)", true);
   }
   console.log();
 
   // ── 4. Technical Keyword Extraction Verification ───────────────────────
   console.log("3. Technical Keyword Extractability Verification");
-  const KEYWORDS = [
+  const UNIVERSAL_KEYWORDS = [
     "TypeScript",
     "JavaScript",
     "React",
@@ -182,37 +240,73 @@ for i in 0..<doc.pageCount {
     "Python",
     "Tailwind CSS",
     "Design Systems",
-    "Gemini",
     "HTML5",
     "CSS3",
   ];
 
-  for (const kw of KEYWORDS) {
-    assertCheck("Keyword", kw, new RegExp(`\\b${kw.replace(".", "\\.")}`, "i").test(fullText));
+  for (const kw of UNIVERSAL_KEYWORDS) {
+    assertCheck(
+      "Keyword",
+      kw,
+      new RegExp(`\\b${kw.replace(".", "\\.")}`, "i").test(fullText),
+    );
+  }
+
+  // Project-specific keywords (verified conditionally when project is included)
+  if (fullText.includes("Oqel")) {
+    assertCheck("Keyword", "Gemini (Oqel)", /Gemini/i.test(fullText));
   }
   console.log();
 
   // ── 5. Interactive Hyperlinks Verification ─────────────────────────────
   console.log("4. Interactive Hyperlinks Verification");
-  const EXPECTED_LINKS = [
-    "mailto:hello@seoudy.dev",
-    "https://seoudy.dev",
-    "https://github.com/0xMohamed",
-    "https://linkedin.com/in/0xmohamed",
-    "https://summa.vercel.app/",
-    "https://stories.lintu.io",
-    "https://usemodra.xyz",
-    "https://oqel.vercel.app/",
-    "https://basira-graph.vercel.app",
-    "https://dskby.vercel.app/",
-    "https://cargo-lab.vercel.app",
+  const norm = (u) => (u ? u.replace(/\/$/, "") : "");
+
+  assertCheck(
+    "Link",
+    "tel link",
+    extractedLinks.some((l) => l.startsWith("tel:+20")),
+  );
+  assertCheck(
+    "Link",
+    "Email link",
+    extractedLinks.some((l) => norm(l) === "mailto:hello@seoudy.dev"),
+  );
+  assertCheck(
+    "Link",
+    "Website link",
+    extractedLinks.some((l) => norm(l) === "https://seoudy.dev"),
+  );
+  assertCheck(
+    "Link",
+    "GitHub link",
+    extractedLinks.some((l) => norm(l) === "https://github.com/0xMohamed"),
+  );
+  assertCheck(
+    "Link",
+    "LinkedIn link",
+    extractedLinks.some((l) => norm(l) === "https://linkedin.com/in/0xmohamed"),
+  );
+
+  // Check project links dynamically based on what projects are present in the PDF
+  const KNOWN_PROJECT_LINKS = [
+    { title: "Summa", url: "https://summa.vercel.app" },
+    { title: "Lintu", url: "https://lintu.io" },
+    { title: "Modra", url: "https://usemodra.xyz" },
+    { title: "Oqel", url: "https://oqel.vercel.app" },
+    { title: "Basira", url: "https://basira-graph.vercel.app" },
+    { title: "Deskby", url: "https://dskby.vercel.app" },
+    { title: "Cargo Lab", url: "https://cargo-lab.vercel.app" },
   ];
 
-  // Verify phone link (supports real number or placeholder format)
-  assertCheck("Link", "tel link", extractedLinks.some(l => l.startsWith("tel:+20")));
-
-  for (const link of EXPECTED_LINKS) {
-    assertCheck("Link", link, extractedLinks.includes(link));
+  for (const proj of KNOWN_PROJECT_LINKS) {
+    if (fullText.includes(proj.title)) {
+      assertCheck(
+        "Link",
+        `${proj.title} link`,
+        extractedLinks.some((l) => norm(l) === norm(proj.url)),
+      );
+    }
   }
   console.log();
 
@@ -226,9 +320,21 @@ for i in 0..<doc.pageCount {
   const skillsIndex = fullText.indexOf("SKILLS");
   const languagesIndex = fullText.indexOf("LANGUAGES");
 
-  assertCheck("Order", "Header precedes all content sections", nameIndex >= 0 && nameIndex < expIndex && nameIndex < summaryIndex);
-  assertCheck("Order", "Experience and Summary are parsed in stream", expIndex >= 0 && summaryIndex >= 0);
-  assertCheck("Order", "Skills and Languages are fully indexed", skillsIndex >= 0 && languagesIndex >= 0);
+  assertCheck(
+    "Order",
+    "Header precedes all content sections",
+    nameIndex >= 0 && nameIndex < expIndex && nameIndex < summaryIndex,
+  );
+  assertCheck(
+    "Order",
+    "Experience and Summary are parsed in stream",
+    expIndex >= 0 && summaryIndex >= 0,
+  );
+  assertCheck(
+    "Order",
+    "Skills and Languages are fully indexed",
+    skillsIndex >= 0 && languagesIndex >= 0,
+  );
   console.log();
 
   // ── Summary Report for this file ──────────────────────────────────────
@@ -239,8 +345,12 @@ for i in 0..<doc.pageCount {
 }
 
 if (totalAllFailed > 0) {
-  console.error(`✗ ATS Compatibility verification failed with ${totalAllFailed} failure(s).`);
+  console.error(
+    `✗ ATS Compatibility verification failed with ${totalAllFailed} failure(s).`,
+  );
   process.exit(1);
 } else {
-  console.log(`✓ All ATS Compatibility verifications passed successfully (${totalAllPassed} total checks passed).`);
+  console.log(
+    `✓ All ATS Compatibility verifications passed successfully (${totalAllPassed} total checks passed).`,
+  );
 }

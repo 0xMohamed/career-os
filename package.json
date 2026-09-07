@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Career OS — personal career operating system. Single source of truth for professional content.",
+  "license": "MIT",
   "private": true,
   "engines": {
     "node": ">=20.0.0",
@@ -16,5 +17,7 @@
     "test:ats": "node scripts/verify-ats.js",
     "clean": "node -e \"const fs=require('fs'); const p='output'; if(fs.existsSync(p)) fs.rmSync(p,{recursive:true}); fs.mkdirSync(p); console.log('output/ cleaned.');\""
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "pdfjs-dist": "^6.3.289"
+  }
 }

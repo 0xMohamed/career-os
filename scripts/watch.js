@@ -5,41 +5,50 @@
  * Runs Typst in watch mode for a specific application (default: master.typ).
  *
  * Usage:
- *   pnpm watch          # watches applications/master.typ → output/resume.pdf
- *   pnpm watch -- oto   # watches applications/oto.typ → output/oto.pdf
+ *   pnpm watch             # watches applications/master.typ → output/resume.pdf
+ *   pnpm watch -- <app>    # watches applications/<app>.typ → output/resume-<app>.pdf
  */
 
 import { spawn } from "child_process";
 import { mkdirSync, existsSync } from "fs";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
+import { resolve } from "path";
+import { root, paths, getApplication, getPhoneInput } from "./config.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = resolve(__dirname, "..");
-
-const outputDir = resolve(root, "output");
-if (!existsSync(outputDir)) {
-  mkdirSync(outputDir, { recursive: true });
+if (!existsSync(paths.output)) {
+  mkdirSync(paths.output, { recursive: true });
 }
 
 // Determine target application and output file (filter out '--' prefix passed by package managers)
 const args = process.argv.slice(2).filter(arg => arg !== "--");
-const target = args[0] || "master";
-const entry = resolve(root, "applications", `${target}.typ`);
-const outName = target === "master" ? "resume.pdf" : `${target}.pdf`;
-const out = resolve(outputDir, outName);
+const targetQuery = args[0] || "master";
+const app = getApplication(targetQuery);
 
-if (!existsSync(entry)) {
-  console.error(`\n✗ Error: Application file not found: applications/${target}.typ`);
+if (!app) {
+  console.error(`\n✗ Error: Application file not found: applications/${targetQuery}.typ`);
   process.exit(1);
 }
 
+const entry = app.path;
+const outName = app.defaultOutName;
+const out = resolve(paths.output, outName);
+const phone = getPhoneInput();
+
 console.log("Career OS — watching for changes...");
-console.log(`  Entry : applications/${target}.typ`);
+console.log(`  Entry : ${app.file}`);
+console.log(`  Layout: ${app.detectedLayout}`);
+if (phone) {
+  console.log(`  Phone : Configured via CAREER_PHONE/private.json`);
+}
 console.log(`  Output: output/${outName}`);
 console.log(`  Press Ctrl+C to stop.\n`);
 
-const child = spawn("typst", ["watch", "--root", root, entry, out], {
+const typstArgs = ["watch", "--root", root, "--input", `layout=${app.detectedLayout}`];
+if (phone) {
+  typstArgs.push("--input", `phone=${phone}`);
+}
+typstArgs.push(entry, out);
+
+const child = spawn("typst", typstArgs, {
   stdio: "inherit",
   cwd: root,
 });

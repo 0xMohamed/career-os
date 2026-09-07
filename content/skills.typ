@@ -113,3 +113,16 @@
     ),
   ),
 )
+
+// Helper function to extract, reorder, or customize skill categories in applications
+#let get-skill-category(name, items: none, label: none) = {
+  let found = skills.find(s => s.category == name)
+  if found == none {
+    (category: if label != none { label } else { name }, items: if items != none { items } else { () })
+  } else {
+    (
+      category: if label != none { label } else { found.category },
+      items: if items != none { items } else { found.items },
+    )
+  }
+}

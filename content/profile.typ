@@ -10,7 +10,11 @@
   title:    "Frontend Engineer",
   tagline:  "Frontend Engineer | Interactive Systems | Data Visualization | AI-Powered Experiences",
   location: "Cairo, Egypt",
-  phone:    "+1 XXX XXX XXX",
+  phone: if "phone" in sys.inputs and sys.inputs.at("phone") != "" {
+    sys.inputs.at("phone")
+  } else {
+    "+1 XXX XXX XXX"
+  },
   email:    "hello@seoudy.dev",
   website:  "seoudy.dev",
   github:   "github.com/0xMohamed",

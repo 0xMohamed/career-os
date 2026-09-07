@@ -17,3 +17,7 @@ Thumbs.db
 
 # DOCX references
 *.docx
+
+# Private local overrides
+private.json
+.env*

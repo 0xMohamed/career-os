@@ -5,62 +5,47 @@
  * Compiles applications through specific presentation layouts into output PDFs.
  *
  * Usage:
- *   pnpm build                     # compiles master.typ @ editorial → output/resume.pdf
- *   pnpm build -- master standard  # compiles master.typ @ standard  → output/single.pdf
- *   pnpm build -- master classic   # compiles master.typ @ classic   → output/classic.pdf
- *   pnpm build:all                 # compiles master across all 3 layouts (editorial, standard, classic)
+ *   pnpm build                     # compiles default (master @ editorial) → output/resume.pdf
+ *   pnpm build -- <app>            # compiles applications/<app>.typ using its default layout
+ *   pnpm build -- <app> <layout>   # compiles applications/<app>.typ with specific layout override
+ *   pnpm build:all                 # compiles master across all layouts + all custom applications
  */
 
 import { execSync } from "child_process";
 import { mkdirSync, existsSync } from "fs";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = resolve(__dirname, "..");
+import { resolve } from "path";
+import { root, paths, getBuildJobs, getPhoneInput } from "./config.js";
 
 // Ensure output directory exists
-const outputDir = resolve(root, "output");
-if (!existsSync(outputDir)) {
-  mkdirSync(outputDir, { recursive: true });
+if (!existsSync(paths.output)) {
+  mkdirSync(paths.output, { recursive: true });
 }
 
 // Parse arguments (filtering package manager '--')
 const args = process.argv.slice(2).filter(arg => arg !== "--");
-const firstArg = args[0] || "master";
-const secondArg = args[1] || "editorial";
+const firstArg = args[0];
+const secondArg = args[1];
 
 let buildJobs = [];
-
-if (firstArg === "all") {
-  buildJobs = [
-    { app: "master", layout: "editorial", outName: "resume.pdf" },
-    { app: "master", layout: "standard",  outName: "single.pdf" },
-    { app: "master", layout: "classic",   outName: "classic.pdf" },
-  ];
-} else {
-  const app = firstArg;
-  const layout = secondArg;
-  let outName = `${app}.pdf`;
-  if (app === "master" && layout === "editorial") {
-    outName = "resume.pdf";
-  } else if (app === "master" && (layout === "standard" || layout === "single-column" || layout === "one-column")) {
-    outName = "single.pdf";
-  } else if (app === "master" && (layout === "classic" || layout === "traditional")) {
-    outName = "classic.pdf";
-  } else if (layout !== "editorial") {
-    outName = `${app}-${layout}.pdf`;
-  }
-  buildJobs = [{ app, layout, outName }];
+try {
+  buildJobs = getBuildJobs(firstArg, secondArg);
+} catch (err) {
+  console.error(`\n✗ ${err.message}`);
+  process.exit(1);
 }
 
+const phone = getPhoneInput();
+
 console.log("Career OS — building resume artifacts...\n");
+if (phone) {
+  console.log("  [Privacy] Custom phone number detected via CAREER_PHONE/private.json\n");
+}
 
 let successCount = 0;
 
 for (const { app, layout, outName } of buildJobs) {
-  const entry = resolve(root, "applications", `${app}.typ`);
-  const out = resolve(outputDir, outName);
+  const entry = resolve(paths.applications, `${app}.typ`);
+  const out = resolve(paths.output, outName);
 
   if (!existsSync(entry)) {
     console.error(`✗ Error: Application file not found: applications/${app}.typ`);
@@ -72,7 +57,13 @@ for (const { app, layout, outName } of buildJobs) {
   console.log(`  Output      : output/${outName}`);
 
   try {
-    execSync(`typst compile --root "${root}" --input layout="${layout}" "${entry}" "${out}"`, {
+    const inputArgs = [`layout=${layout}`];
+    if (phone) {
+      inputArgs.push(`phone=${phone}`);
+    }
+    const inputFlags = inputArgs.map(arg => `--input "${arg}"`).join(" ");
+
+    execSync(`typst compile --root "${root}" ${inputFlags} "${entry}" "${out}"`, {
       stdio: "pipe",
       cwd: root,
     });

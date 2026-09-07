@@ -50,5 +50,6 @@
   targeted_summaries: (
     ai_native: "Frontend and product engineer expanding into AI-native application engineering. Combining proven expertise in complex interactive interfaces, state management, and data visualization with active focus on Node.js/Python backend services, LLM application orchestration, structured outputs, and reliable AI workflows.",
     data_systems: "Frontend engineer specializing in complex interactive systems and data visualization. Proven track record building fluid graphical simulations, visual editors, and real-time dashboards with D3, Visx, and React.",
+    siemens_frontend: "Frontend engineer with 4+ years of experience building complex interactive web applications, reusable component architectures, and high-performance data-heavy interfaces using React, TypeScript, JavaScript, and modern HTML/CSS. Strong foundation in frontend architecture, state management (Redux Toolkit, Zustand), responsive design, and performance optimization, with proven experience in canvas/DOM rendering and accessibility. Experienced in integrating Node.js backend services, REST APIs, and practical AI/LLM workflows while expanding into full-stack and AI-native application engineering.",
   ),
 )
