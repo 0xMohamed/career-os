@@ -13,7 +13,7 @@
   phone: if "phone" in sys.inputs and sys.inputs.at("phone") != "" {
     sys.inputs.at("phone")
   } else {
-    "+1 XXX XXX XXX"
+    none
   },
   email:    "hello@seoudy.dev",
   website:  "seoudy.dev",

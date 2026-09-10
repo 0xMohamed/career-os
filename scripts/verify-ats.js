@@ -11,26 +11,30 @@
  *   6. Stream reading order & semantic sequence analysis.
  *
  * Usage:
- *   node scripts/verify-ats.js                 # verifies all generated resume PDFs
- *   node scripts/verify-ats.js resume.pdf      # verifies specific PDF
- *   node scripts/verify-ats.js siemens         # verifies specific application
+ *   node scripts/verify-ats.js                      # verifies all generated resume PDFs (compact)
+ *   node scripts/verify-ats.js --verbose            # verifies all (detailed per-check output)
+ *   node scripts/verify-ats.js resume.pdf           # verifies specific PDF
+ *   node scripts/verify-ats.js siemens              # verifies specific application
  */
 
 import { execSync } from "child_process";
 import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
-import { root, paths, getBuildJobs } from "./config.js";
+import { root, paths, getBuildJobs, getPhoneInput } from "./config.js";
 
-const args = process.argv.slice(2).filter((arg) => arg !== "--");
+const allArgs = process.argv.slice(2);
+const verbose = allArgs.includes("--verbose");
+const args = allArgs.filter((arg) => arg !== "--" && arg !== "--verbose");
 const rawTarget = args[0];
+
+const configuredPhone = getPhoneInput();
 
 let targetPdfNames = [];
 if (rawTarget) {
   if (rawTarget.endsWith(".pdf")) {
     targetPdfNames = [rawTarget];
   } else {
-    // Resolve application jobs
     try {
       const jobs = getBuildJobs(rawTarget);
       targetPdfNames = jobs.map((j) => j.outName);
@@ -39,20 +43,27 @@ if (rawTarget) {
     }
   }
 } else {
-  // Default: verify all configured build artifacts
   const allJobs = getBuildJobs("all");
   targetPdfNames = allJobs.map((j) => j.outName);
 }
 
 let totalAllPassed = 0;
 let totalAllFailed = 0;
+const perFileResults = [];
+
+function padRight(str, width) {
+  if (str.length >= width) return str;
+  return str + " ".repeat(width - str.length);
+}
 
 for (const pdfName of targetPdfNames) {
   const pdfPath = resolve(paths.output, pdfName);
 
-  console.log("=================================================");
-  console.log(` ATS Verification: output/${pdfName}`);
-  console.log("=================================================\n");
+  if (verbose) {
+    console.log("=================================================");
+    console.log(` ATS Verification: output/${pdfName}`);
+    console.log("=================================================\n");
+  }
 
   if (!existsSync(pdfPath)) {
     console.log(
@@ -81,7 +92,6 @@ for (const pdfName of targetPdfNames) {
     }
   }
 
-  // ── 1. Pure JS PDF Text & Annotation Extraction via pdfjs-dist ────────
   let extractedPages = [];
   let extractedLinks = [];
 
@@ -97,7 +107,6 @@ for (const pdfName of targetPdfNames) {
       const page = await doc.getPage(i);
       const textContent = await page.getTextContent();
 
-      // Reconstruct text lines preserving physical reading stream
       let lastY = null;
       let pageLines = [];
       let currentLine = "";
@@ -117,7 +126,6 @@ for (const pdfName of targetPdfNames) {
 
       extractedPages.push(pageLines.join("\n"));
 
-      // Extract interactive link annotations
       const annots = await page.getAnnotations();
       for (const annot of annots) {
         const link =
@@ -137,23 +145,30 @@ for (const pdfName of targetPdfNames) {
   const fullText = extractedPages.join("\n\n");
   let passed = 0;
   let failed = 0;
+  const failedCheckNames = [];
 
   function assertCheck(category, name, condition, details = "") {
     if (condition) {
-      console.log(`  ✓ [${category}] ${name}`);
+      if (verbose) {
+        console.log(`  ✓ [${category}] ${name}`);
+      }
       passed++;
       totalAllPassed++;
     } else {
-      console.error(
-        `  ✗ [${category}] ${name} ${details ? `— ${details}` : ""}`,
-      );
+      if (verbose) {
+        console.error(
+          `  ✗ [${category}] ${name} ${details ? `— ${details}` : ""}`,
+        );
+      }
       failed++;
       totalAllFailed++;
+      failedCheckNames.push(name);
     }
   }
 
-  // ── 2. Universal Identity & Contact Verification ──────────────────────
-  console.log("1. Identity & Contact Field Verification");
+  if (verbose) {
+    console.log("1. Identity & Contact Field Verification");
+  }
   assertCheck(
     "Identity",
     "Full Name (Mohamed Seoudy)",
@@ -164,11 +179,23 @@ for (const pdfName of targetPdfNames) {
     "Title (Frontend Engineer)",
     /Frontend\s+Engineer/i.test(fullText),
   );
-  assertCheck(
-    "Identity",
-    "Phone",
-    fullText.includes("+1 XXX XXX XXX") || /\+1\s*\d/.test(fullText),
-  );
+
+  if (configuredPhone) {
+    const cleanPhone = configuredPhone.replace(/\s+/g, "");
+    const phonePattern = new RegExp(
+      configuredPhone
+        .split("")
+        .map((c) => (/\s/.test(c) ? "\\s*" : c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")))
+        .join(""),
+    );
+    assertCheck(
+      "Identity",
+      "Phone",
+      phonePattern.test(fullText) || fullText.includes(cleanPhone),
+      `expected "${configuredPhone}"`,
+    );
+  }
+
   assertCheck(
     "Identity",
     "Email (hello@seoudy.dev)",
@@ -196,10 +223,11 @@ for (const pdfName of targetPdfNames) {
     "Location (Cairo, Egypt)",
     /Cairo,\s*Egypt/i.test(fullText),
   );
-  console.log();
+  if (verbose) console.log();
 
-  // ── 3. Universal Structural Headings Verification ─────────────────────
-  console.log("2. Standard Structural Headings Verification");
+  if (verbose) {
+    console.log("2. Standard Structural Headings Verification");
+  }
   const UNIVERSAL_HEADINGS = [
     "EXPERIENCE",
     "PROJECTS",
@@ -213,14 +241,14 @@ for (const pdfName of targetPdfNames) {
     assertCheck("Heading", heading, fullText.includes(heading));
   }
 
-  // Conditionally verify optional sections if present
   if (fullText.includes("KEY STRENGTHS")) {
     assertCheck("Heading", "KEY STRENGTHS (optional layout section)", true);
   }
-  console.log();
+  if (verbose) console.log();
 
-  // ── 4. Technical Keyword Extraction Verification ───────────────────────
-  console.log("3. Technical Keyword Extractability Verification");
+  if (verbose) {
+    console.log("3. Technical Keyword Extractability Verification");
+  }
   const UNIVERSAL_KEYWORDS = [
     "TypeScript",
     "JavaScript",
@@ -252,21 +280,25 @@ for (const pdfName of targetPdfNames) {
     );
   }
 
-  // Project-specific keywords (verified conditionally when project is included)
   if (fullText.includes("Oqel")) {
     assertCheck("Keyword", "Gemini (Oqel)", /Gemini/i.test(fullText));
   }
-  console.log();
+  if (verbose) console.log();
 
-  // ── 5. Interactive Hyperlinks Verification ─────────────────────────────
-  console.log("4. Interactive Hyperlinks Verification");
+  if (verbose) {
+    console.log("4. Interactive Hyperlinks Verification");
+  }
   const norm = (u) => (u ? u.replace(/\/$/, "") : "");
 
-  assertCheck(
-    "Link",
-    "tel link",
-    extractedLinks.some((l) => l.startsWith("tel:+20")),
-  );
+  if (configuredPhone) {
+    const cleanPhone = configuredPhone.replace(/\s+/g, "");
+    assertCheck(
+      "Link",
+      "tel link",
+      extractedLinks.some((l) => l === `tel:${cleanPhone}` || l.startsWith(`tel:${cleanPhone.replace(/^\+/, "")}`)),
+      `expected tel:${cleanPhone}`,
+    );
+  }
   assertCheck(
     "Link",
     "Email link",
@@ -288,7 +320,6 @@ for (const pdfName of targetPdfNames) {
     extractedLinks.some((l) => norm(l) === "https://linkedin.com/in/0xmohamed"),
   );
 
-  // Check project links dynamically based on what projects are present in the PDF
   const KNOWN_PROJECT_LINKS = [
     { title: "Summa", url: "https://summa.vercel.app" },
     { title: "Lintu", url: "https://lintu.io" },
@@ -308,10 +339,11 @@ for (const pdfName of targetPdfNames) {
       );
     }
   }
-  console.log();
+  if (verbose) console.log();
 
-  // ── 6. Reading Order & Layout Analysis ────────────────────────────────
-  console.log("5. Stream Reading Order & Semantic Analysis");
+  if (verbose) {
+    console.log("5. Stream Reading Order & Semantic Analysis");
+  }
   const nameIndex = fullText.search(/Mohamed\s+Seoudy/i);
   const expIndex = fullText.indexOf("EXPERIENCE");
   const summaryIndex = fullText.indexOf("SUMMARY");
@@ -335,22 +367,53 @@ for (const pdfName of targetPdfNames) {
     "Skills and Languages are fully indexed",
     skillsIndex >= 0 && languagesIndex >= 0,
   );
-  console.log();
+  if (verbose) console.log();
 
-  // ── Summary Report for this file ──────────────────────────────────────
-  console.log(` ${pdfName} Results: ${passed} Passed, ${failed} Failed`);
-  console.log(` Total Pages Extracted : ${extractedPages.length}`);
-  console.log(` Total Links Verified  : ${extractedLinks.length}`);
-  console.log("-------------------------------------------------\n");
+  perFileResults.push({
+    pdfName,
+    passed,
+    failed,
+    failedCheckNames,
+    total: passed + failed,
+  });
+
+  if (verbose) {
+    console.log(` ${pdfName} Results: ${passed} Passed, ${failed} Failed`);
+    console.log(` Total Pages Extracted : ${extractedPages.length}`);
+    console.log(` Total Links Verified  : ${extractedLinks.length}`);
+    console.log("-------------------------------------------------\n");
+  }
 }
+
+const maxNameWidth = Math.max(...perFileResults.map((r) => r.pdfName.length));
+const maxCountWidth = Math.max(
+  ...perFileResults.map((r) => String(r.total).length),
+);
+
+if (!verbose) {
+  console.log("ATS Verification\n");
+}
+
+for (const result of perFileResults) {
+  const mark = result.failed === 0 ? "✓" : "✗";
+  const namePadded = padRight(result.pdfName, maxNameWidth);
+  const countStr = `${String(result.passed).padStart(maxCountWidth)}/${result.total}`;
+
+  if (result.failed === 0) {
+    console.log(`${mark} ${namePadded}  ${countStr}`);
+  } else {
+    const failures = result.failedCheckNames.join(", ");
+    console.log(`${mark} ${namePadded}  ${countStr} — ${failures}`);
+  }
+}
+
+console.log();
 
 if (totalAllFailed > 0) {
   console.error(
-    `✗ ATS Compatibility verification failed with ${totalAllFailed} failure(s).`,
+    `✗ ATS checks failed with ${totalAllFailed} failure(s).`,
   );
   process.exit(1);
 } else {
-  console.log(
-    `✓ All ATS Compatibility verifications passed successfully (${totalAllPassed} total checks passed).`,
-  );
+  console.log(`✓ All ATS checks passed.`);
 }
