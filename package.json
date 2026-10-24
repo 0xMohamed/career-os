@@ -14,6 +14,8 @@
     "build:all": "node scripts/build.js all",
     "watch": "node scripts/watch.js",
     "lint": "node scripts/lint.js",
+    "validate": "node scripts/validate.js",
+    "test": "node tests/integrity.test.js",
     "test:ats": "node scripts/verify-ats.js",
     "clean": "node -e \"const fs=require('fs'); const p='output'; if(fs.existsSync(p)) fs.rmSync(p,{recursive:true}); fs.mkdirSync(p); console.log('output/ cleaned.');\""
   },

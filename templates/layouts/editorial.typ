@@ -4,7 +4,7 @@
 //
 // Modern, high-density editorial resume layout with parallel scanning:
 //   - Left column (58%): Experience and Projects
-//   - Right column (42%): Summary, Key Strengths, Education, Skills, Languages
+//   - Right column (42%): Summary, Education, Skills, Languages
 
 #import "../theme.typ": *
 
@@ -71,7 +71,14 @@
           #v(1.5pt)
           #text(size: size-body, fill: color-secondary)[#proj.summary]
           #v(space-tight)
-          #let top-achievements = proj.achievements.slice(0, calc.min(2, proj.achievements.len()))
+          #let max-bullets = if "limit" in proj and proj.limit != none {
+            proj.limit
+          } else if "max_project_achievements" in app and app.max_project_achievements != none {
+            app.max_project_achievements
+          } else {
+            proj.achievements.len()
+          }
+          #let top-achievements = proj.achievements.slice(0, calc.min(max-bullets, proj.achievements.len()))
           #for bullet-item in top-achievements [
             #bullet(bullet-item)
           ]
@@ -92,29 +99,6 @@
         fill: color-secondary,
         p.summary,
       )
-    ]
-
-    // ── KEY STRENGTHS ────────────────────────────────────────────────
-    #if "strengths" in app and app.strengths != none and app.strengths.len() > 0 [
-      #section-heading("Key Strengths")
-      #for (i, s) in app.strengths.enumerate() [
-        #block(breakable: false)[
-          #grid(
-            columns: (10pt, 1fr),
-            gutter: 2pt,
-            align: (top + left, top + left),
-            icon-gem,
-            [
-              #text(font: font-sans, size: size-body, weight: "bold", fill: color-ink)[#s.title] \
-              #v(0.5pt)
-              #text(size: size-small, fill: color-secondary)[#s.description]
-            ]
-          )
-          #if i < app.strengths.len() - 1 [
-            #dotted-divider()
-          ]
-        ]
-      ]
     ]
 
     // ── EDUCATION ────────────────────────────────────────────────────

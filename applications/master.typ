@@ -15,11 +15,12 @@
 #import "../content/strengths.typ":  strengths
 
 // ── Import project layer ────────────────────────────────────────────
-#import "../projects/lintu.typ":   lintu
-#import "../projects/modra.typ":   modra
-#import "../projects/oqel.typ":    oqel
-#import "../projects/basira.typ":  basira
-#import "../projects/deskby.typ":  deskby
+#import "../projects/summa.typ":    summa
+#import "../projects/lintu.typ":    lintu
+#import "../projects/modra.typ":    modra
+#import "../projects/oqel.typ":     oqel
+#import "../projects/basira.typ":   basira
+#import "../projects/deskby.typ":   deskby
 #import "../projects/cargolab.typ": cargolab
 
 // ── Master composition ──────────────────────────────────────────────
@@ -28,6 +29,9 @@
 
   // All projects included in canonical order.
   projects: (lintu, modra, oqel, basira, deskby, cargolab),
+
+  // Default to top 2 achievements per project for master to maintain balanced 2-page density
+  max_project_achievements: 2,
 
   experience: experience,
   strengths:  strengths,

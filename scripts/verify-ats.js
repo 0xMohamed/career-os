@@ -21,7 +21,7 @@ import { execSync } from "child_process";
 import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
-import { root, paths, getBuildJobs, getPhoneInput } from "./config.js";
+import { root, paths, getBuildJobs, getPhoneInput, validatePageBudget } from "./config.js";
 
 const allArgs = process.argv.slice(2);
 const verbose = allArgs.includes("--verbose");
@@ -94,6 +94,7 @@ for (const pdfName of targetPdfNames) {
 
   let extractedPages = [];
   let extractedLinks = [];
+  let totalPages = 0;
 
   try {
     const data = new Uint8Array(readFileSync(pdfPath));
@@ -102,6 +103,7 @@ for (const pdfName of targetPdfNames) {
       useSystemFonts: true,
       disableFontFace: true,
     }).promise;
+    totalPages = doc.numPages;
 
     for (let i = 1; i <= doc.numPages; i++) {
       const page = await doc.getPage(i);
@@ -166,6 +168,14 @@ for (const pdfName of targetPdfNames) {
     }
   }
 
+  const pageBudgetResult = validatePageBudget(totalPages, pdfName);
+  assertCheck(
+    "Page Budget",
+    `Strict 2-page limit (${totalPages} pages)`,
+    pageBudgetResult.valid,
+    pageBudgetResult.error || "",
+  );
+
   if (verbose) {
     console.log("1. Identity & Contact Field Verification");
   }
@@ -176,8 +186,8 @@ for (const pdfName of targetPdfNames) {
   );
   assertCheck(
     "Identity",
-    "Title (Frontend Engineer)",
-    /Frontend\s+Engineer/i.test(fullText),
+    "Title (Frontend Engineer / Software Engineer)",
+    /Frontend\s+Engineer/i.test(fullText) || /Software\s+Engineer/i.test(fullText),
   );
 
   if (configuredPhone) {
@@ -263,11 +273,14 @@ for (const pdfName of targetPdfNames) {
     "Canvas",
     "SVG",
     "Fastify",
+    "Hono",
     "PostgreSQL",
     "REST APIs",
     "Python",
     "Tailwind CSS",
+    "shadcn/ui",
     "Design Systems",
+    "Server-Driven UI",
     "HTML5",
     "CSS3",
   ];
@@ -321,7 +334,7 @@ for (const pdfName of targetPdfNames) {
   );
 
   const KNOWN_PROJECT_LINKS = [
-    { title: "Summa", url: "https://summa.vercel.app" },
+    { title: "Summa", url: "https://summa.cyou" },
     { title: "Lintu", url: "https://lintu.io" },
     { title: "Modra", url: "https://usemodra.xyz" },
     { title: "Oqel", url: "https://oqel.vercel.app" },

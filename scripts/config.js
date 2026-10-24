@@ -20,6 +20,7 @@ export const paths = {
   projects: resolve(root, "projects"),
   applications: resolve(root, "applications"),
   templates: resolve(root, "templates"),
+  profiles: resolve(root, "profiles"),
   output: resolve(root, "output"),
 };
 
@@ -32,6 +33,13 @@ export const CORE_CONTENT_FILES = [
   "content/skills.typ",
   "content/strengths.typ",
   "content/career-direction.typ",
+  "content/helpers.typ",
+];
+
+// Core reusable job-family profiles
+export const CORE_PROFILE_FILES = [
+  "profiles/frontend.typ",
+  "profiles/software-engineer.typ",
 ];
 
 // Core presentation templates & layouts
@@ -57,8 +65,46 @@ export const LAYOUT_ALIASES = {
 };
 
 export function normalizeLayout(raw) {
-  if (!raw) return "editorial";
+  if (!raw) return "classic";
   return LAYOUT_ALIASES[raw.toLowerCase()] || raw;
+}
+
+export const MAX_PAGE_BUDGET = 2;
+
+/**
+ * Deterministic page-budget validation guard.
+ * Validates that an artifact's page count does not exceed the allowed budget.
+ *
+ * @param {number} pageCount - The actual number of pages extracted from the PDF.
+ * @param {string} [artifactName="Artifact"] - Name of the artifact for diagnostic reporting.
+ * @param {number} [maxBudget=MAX_PAGE_BUDGET] - Maximum allowed pages (default: 2).
+ * @returns {{ valid: boolean, pageCount: number, maxBudget: number, error: string | null }}
+ */
+export function validatePageBudget(pageCount, artifactName = "Artifact", maxBudget = MAX_PAGE_BUDGET) {
+  if (typeof pageCount !== "number" || isNaN(pageCount) || pageCount < 1 || !Number.isInteger(pageCount)) {
+    return {
+      valid: false,
+      pageCount,
+      maxBudget,
+      error: `Invalid page count for ${artifactName}: received ${pageCount} (must be a positive integer)`,
+    };
+  }
+
+  if (pageCount > maxBudget) {
+    return {
+      valid: false,
+      pageCount,
+      maxBudget,
+      error: `Page budget exceeded for ${artifactName}: got ${pageCount} pages (maximum allowed: ${maxBudget})`,
+    };
+  }
+
+  return {
+    valid: true,
+    pageCount,
+    maxBudget,
+    error: null,
+  };
 }
 
 /**
@@ -96,6 +142,40 @@ export function discoverProjects() {
 }
 
 /**
+ * Dynamically discover all job-family profiles in profiles/*.typ
+ */
+export function discoverProfiles() {
+  if (!existsSync(paths.profiles)) return [];
+  return readdirSync(paths.profiles)
+    .filter(file => file.endsWith(".typ"))
+    .map(file => ({
+      id: basename(file, ".typ"),
+      file: `profiles/${file}`,
+      path: resolve(paths.profiles, file),
+    }));
+}
+
+// Canonical production targets and their output filenames
+export const PRODUCTION_TARGETS = [
+  {
+    id: "frontend-engineer",
+    aliases: ["frontend", "fe", "frontend-engineer", "Mohamed_Seoudy_Frontend_Engineer"],
+    file: "applications/frontend-engineer.typ",
+    outName: "Mohamed_Seoudy_Frontend_Engineer.pdf",
+    layout: "classic",
+    title: "Frontend Engineer",
+  },
+  {
+    id: "software-engineer",
+    aliases: ["software", "se", "swe", "software-engineer", "Mohamed_Seoudy_Software_Engineer"],
+    file: "applications/software-engineer.typ",
+    outName: "Mohamed_Seoudy_Software_Engineer.pdf",
+    layout: "classic",
+    title: "Software Engineer",
+  },
+];
+
+/**
  * Dynamically discover all applications in applications/*.typ
  * Inspects each application file to extract declared layout and conventions.
  */
@@ -111,13 +191,14 @@ export function discoverApplications() {
 
     // Detect declared layout in file: e.g. layout: "classic" or resume-template(app, layout: "classic")
     const layoutMatch = content.match(/layout:\s*"([a-zA-Z0-9_-]+)"/);
-    const detectedLayout = layoutMatch ? normalizeLayout(layoutMatch[1]) : "editorial";
+    const detectedLayout = layoutMatch ? normalizeLayout(layoutMatch[1]) : "classic";
 
     // Convention-driven output name:
-    // master defaults to resume.pdf (plus multi-layout variants)
-    // custom apps: resume-<id>.pdf (or <id>.pdf if already prefixed with resume-)
     let defaultOutName = `${id}.pdf`;
-    if (id === "master") {
+    const prodTarget = PRODUCTION_TARGETS.find(t => t.id === id);
+    if (prodTarget) {
+      defaultOutName = prodTarget.outName;
+    } else if (id === "master") {
       defaultOutName = "resume.pdf";
     } else if (id.startsWith("resume-")) {
       defaultOutName = `${id}.pdf`;
@@ -140,43 +221,50 @@ export function discoverApplications() {
  */
 export function getApplication(query) {
   const apps = discoverApplications();
-  if (!query) return apps.find(a => a.id === "master") || null;
+  if (!query) {
+    return apps.find(a => a.id === "frontend-engineer") || apps[0] || null;
+  }
 
   const clean = query.replace(/\.typ$/, "").replace(/\.pdf$/, "");
   const normalized = clean.startsWith("resume-") && clean !== "resume" ? clean.replace(/^resume-/, "") : clean;
+
+  const prodMatch = PRODUCTION_TARGETS.find(
+    t => t.id === clean || t.aliases.includes(clean) || t.aliases.includes(normalized) || t.outName === `${clean}.pdf`
+  );
+  if (prodMatch) {
+    const found = apps.find(a => a.id === prodMatch.id);
+    if (found) return found;
+  }
 
   return apps.find(a => a.id === clean || a.id === normalized || a.defaultOutName === `${clean}.pdf`) || null;
 }
 
 /**
  * Generate build jobs dynamically based on targets and layout arguments.
- * No application names are hardcoded.
+ * Default build or 'all' generates the primary canonical role-based resumes.
  */
 export function getBuildJobs(firstArg, secondArg) {
   const apps = discoverApplications();
 
-  if (firstArg === "all") {
+  // Default build or 'all' generates canonical production role-based resumes
+  if (!firstArg || firstArg === "all") {
     const jobs = [];
-    for (const app of apps) {
-      if (app.id === "master") {
-        jobs.push({ app: "master", layout: "editorial", outName: "resume.pdf" });
-        jobs.push({ app: "master", layout: "standard",  outName: "single.pdf" });
-        jobs.push({ app: "master", layout: "classic",   outName: "classic.pdf" });
-      } else {
+    for (const target of PRODUCTION_TARGETS) {
+      const app = apps.find(a => a.id === target.id);
+      if (app) {
         jobs.push({
           app: app.id,
-          layout: app.detectedLayout,
-          outName: app.defaultOutName,
+          layout: app.detectedLayout || target.layout,
+          outName: target.outName,
         });
       }
     }
-    return jobs;
+    if (jobs.length > 0) return jobs;
   }
 
-  const targetApp = getApplication(firstArg || "master");
+  const targetApp = getApplication(firstArg);
   if (!targetApp) {
-    const requested = firstArg || "master";
-    throw new Error(`Application file not found: applications/${requested}.typ`);
+    throw new Error(`Application file not found: applications/${firstArg}.typ`);
   }
 
   const requestedLayout = secondArg ? normalizeLayout(secondArg) : null;

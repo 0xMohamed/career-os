@@ -12,9 +12,10 @@
  */
 
 import { execSync } from "child_process";
-import { mkdirSync, existsSync } from "fs";
+import { mkdirSync, existsSync, readFileSync } from "fs";
 import { resolve } from "path";
-import { root, paths, getBuildJobs, getPhoneInput } from "./config.js";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import { root, paths, getBuildJobs, getPhoneInput, validatePageBudget } from "./config.js";
 
 // Ensure output directory exists
 if (!existsSync(paths.output)) {
@@ -67,7 +68,21 @@ for (const { app, layout, outName } of buildJobs) {
       stdio: "pipe",
       cwd: root,
     });
-    console.log(`  ✓ Build complete → output/${outName}\n`);
+
+    const pdfData = new Uint8Array(readFileSync(out));
+    const doc = await pdfjsLib.getDocument({
+      data: pdfData,
+      useSystemFonts: true,
+      disableFontFace: true,
+    }).promise;
+
+    const budgetCheck = validatePageBudget(doc.numPages, `output/${outName}`);
+    if (!budgetCheck.valid) {
+      console.error(`\n✗ Error: ${budgetCheck.error}`);
+      process.exit(1);
+    }
+
+    console.log(`  ✓ Build complete → output/${outName} (${doc.numPages} pages)\n`);
     successCount++;
   } catch (err) {
     const output = err.stderr?.toString() || err.stdout?.toString() || String(err);

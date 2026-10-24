@@ -37,10 +37,10 @@
 
 // ── Spacing (High Density with Calm Readability) ──────────────────────
 
-#let space-section   = 9.5pt // Between major sections
-#let space-entry     = 6.5pt // Between entries within a section
-#let space-inner     = 2.5pt // Within an entry (title → bullets)
-#let space-tight     = 1.5pt // Tight vertical rhythm
+#let space-section   = 8.5pt // Between major sections
+#let space-entry     = 5.5pt // Between entries within a section
+#let space-inner     = 2.2pt // Within an entry (title → bullets)
+#let space-tight     = 1.2pt // Tight vertical rhythm
 
 // ── Vector Line Icons (Zero-dependency, ATS-safe, 2px uniform stroke) ─
 

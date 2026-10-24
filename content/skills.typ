@@ -3,7 +3,13 @@
 // Skills — the single source of truth for technical skills.
 // No layout, no rendering. Only structured data.
 //
-// Every skill listed here is backed by real project experience.
+// Every skill listed in the active categories below is backed by verified
+// implementation artifacts across local repositories (Summa, Lintu, Modra,
+// Oqel, Basira, Deskby, Cargo Lab).
+//
+// Emerging and transition skills are explicitly designated as such and
+// tracked in content/career-direction.typ.
+//
 // Applications may choose which categories or skills to surface,
 // while templates remain completely presentation-agnostic.
 
@@ -15,7 +21,7 @@
       "JavaScript",
       "HTML5",
       "CSS3",
-      "Python",
+      "Python", // Emerging / active engineering transition (see career-direction.typ)
     ),
   ),
 
@@ -24,16 +30,18 @@
     items: (
       "React",
       "Next.js",
+      "SolidJS",
       "TanStack Start",
       "TanStack Router",
       "React Router",
       "React Hook Form",
-      "Vite",
+      "dnd-kit",
+      "Lexical",
     ),
   ),
 
   (
-    category: "State Management",
+    category: "State, Data Fetching & Validation",
     items: (
       "Redux Toolkit",
       "Zustand",
@@ -47,9 +55,9 @@
     category: "Styling & UI",
     items: (
       "Tailwind CSS",
+      "shadcn/ui",
       "CSS Modules",
       "Design Systems",
-      "Design Tokens",
       "Responsive Design",
     ),
   ),
@@ -67,25 +75,27 @@
   ),
 
   (
-    category: "Backend",
+    category: "Backend & Data",
     items: (
       "Node.js",
+      "Hono",
       "Fastify",
       "Express",
+      "REST APIs",
       "PostgreSQL",
       "Prisma",
-      "REST APIs",
     ),
   ),
 
   (
     category: "AI & LLM Integration",
     items: (
-      "LLM Integration",
-      "Prompt Engineering",
+      "Google Gemini",
       "Structured Outputs",
-      "AI Workflows",
       "Multimodal AI",
+      "AI Workflows",
+      "LLM Integration", // Emerging transition focus (see career-direction.typ)
+      "Prompt Engineering", // Emerging transition focus (see career-direction.typ)
     ),
   ),
 
@@ -93,30 +103,42 @@
     category: "Engineering Practices",
     items: (
       "Component Architecture",
+      "Server-Driven UI",
       "Performance Optimization",
-      "Accessibility (WCAG)",
+      "Web Accessibility",
       "Monorepos",
+      "Algorithms",
       "Cross-Browser Compatibility",
     ),
   ),
 
   (
-    category: "Tooling",
+    category: "Testing & Tooling",
     items: (
+      "Vitest",
+      "Playwright",
+      "Storybook",
+      "Vite",
+      "Turborepo",
       "Git",
       "pnpm",
       "ESLint",
-      "Prettier",
-      "Vitest",
-      "Storybook",
-      "Turborepo",
     ),
   ),
 )
 
 // Helper function to extract, reorder, or customize skill categories in applications
 #let get-skill-category(name, items: none, label: none) = {
-  let found = skills.find(s => s.category == name)
+  let aliases = (
+    "Backend": "Backend & Data",
+    "Tooling": "Testing & Tooling",
+    "Testing": "Testing & Tooling",
+    "State Management": "State, Data Fetching & Validation",
+    "Server State & Data Fetching": "State, Data Fetching & Validation",
+    "State & Data Architecture": "State, Data Fetching & Validation",
+  )
+  let target = aliases.at(name, default: name)
+  let found = skills.find(s => s.category == target or s.category == name)
   if found == none {
     (category: if label != none { label } else { name }, items: if items != none { items } else { () })
   } else {
@@ -126,3 +148,9 @@
     )
   }
 }
+
+// Canonical verified skills referenced in achievement evidence and architecture,
+// but not surfaced as standalone category chips on resumes.
+#let additional-skills = (
+  "Immer",
+)

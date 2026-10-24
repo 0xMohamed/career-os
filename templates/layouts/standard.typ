@@ -105,7 +105,14 @@
           proj-meta-block,
         )
         #v(space-tight)
-        #let top-achievements = proj.achievements.slice(0, calc.min(2, proj.achievements.len()))
+        #let max-bullets = if "limit" in proj and proj.limit != none {
+          proj.limit
+        } else if "max_project_achievements" in app and app.max_project_achievements != none {
+          app.max_project_achievements
+        } else {
+          proj.achievements.len()
+        }
+        #let top-achievements = proj.achievements.slice(0, calc.min(max-bullets, proj.achievements.len()))
         #for bullet-item in top-achievements [
           #bullet(bullet-item)
         ]
@@ -114,30 +121,6 @@
         ]
       ]
     ]
-  ]
-
-  // ── KEY STRENGTHS ──────────────────────────────────────────────────
-  if "strengths" in app and app.strengths != none and app.strengths.len() > 0 [
-    #section-heading("Key Strengths")
-    #grid(
-      columns: (1fr, 1fr),
-      gutter: 12pt,
-      ..app.strengths.map(s => [
-        #block(breakable: false)[
-          #grid(
-            columns: (10pt, 1fr),
-            gutter: 3pt,
-            align: (top + left, top + left),
-            icon-gem,
-            [
-              #text(font: font-sans, size: size-body, weight: "bold", fill: color-ink)[#s.title] \
-              #v(0.5pt)
-              #text(size: size-small, fill: color-secondary)[#s.description]
-            ]
-          )
-        ]
-      ])
-    )
   ]
 
   // ── SKILLS ─────────────────────────────────────────────────────────
@@ -170,39 +153,34 @@
     ]
   ]
 
-  // ── EDUCATION & LANGUAGES ──────────────────────────────────────────
-  grid(
-    columns: (1fr, 1fr),
-    gutter: 20pt,
-    [
-      #if "education" in app and app.education != none and app.education.len() > 0 [
-        #section-heading("Education")
-        #for entry in app.education [
-          #block(breakable: false)[
-            #text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#entry.degree] \
-            #v(1pt)
-            #text(font: font-sans, size: size-body, weight: "semibold", fill: color-accent)[#entry.institution] \
-            #v(1pt)
-            #meta-text[#icon-calendar #h(2pt) #entry.period]
-            #v(space-entry)
-          ]
+  // ── EDUCATION ──────────────────────────────────────────────────────
+  if "education" in app and app.education != none and app.education.len() > 0 [
+    #section-heading("Education")
+    #for entry in app.education [
+      #block(breakable: false)[
+        #let ed-title-block = [
+          #text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#entry.degree]
+          #h(4pt)
+          #text(font: font-sans, size: size-title, weight: "medium", fill: color-accent)[· #entry.institution]
         ]
-      ]
-    ],
-    [
-      #if "languages" in app and app.languages != none and app.languages.len() > 0 [
-        #section-heading("Languages")
-        #for (i, lang) in app.languages.enumerate() [
-          #block(breakable: false)[
-            #text(font: font-sans, size: size-body, weight: "bold", fill: color-ink)[#lang.name]
-            #h(4pt)
-            #text(font: font-sans, size: size-small, fill: color-muted)[· #lang.level]
-            #if i < app.languages.len() - 1 [
-              #v(space-tight)
-            ]
-          ]
-        ]
+        #let ed-meta-block = meta-text[#icon-calendar #h(2pt) #entry.period]
+        #grid(
+          columns: (1fr, auto),
+          gutter: 8pt,
+          align: (left + horizon, right + horizon),
+          ed-title-block,
+          ed-meta-block,
+        )
       ]
     ]
-  )
+  ]
+
+  // ── LANGUAGES ──────────────────────────────────────────────────────
+  if "languages" in app and app.languages != none and app.languages.len() > 0 [
+    #section-heading("Languages")
+    #block(breakable: false)[
+      #let lang-str = app.languages.map(l => l.name + " (" + l.level + ")").join("   ·   ")
+      #text(font: font-sans, size: size-body, fill: color-secondary)[#lang-str]
+    ]
+  ]
 }

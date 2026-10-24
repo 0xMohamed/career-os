@@ -19,6 +19,7 @@ import {
   CORE_CONTENT_FILES,
   CORE_TEMPLATE_FILES,
   discoverProjects,
+  discoverProfiles,
   discoverApplications,
 } from "./config.js";
 
@@ -88,7 +89,25 @@ if (applications.length === 0) {
 }
 console.log();
 
-// 5. Dry Typst compiles across discovered applications
+// 5. Check job-family profiles in profiles/
+console.log("  [Profile Layer]");
+const profiles = discoverProfiles();
+if (profiles.length === 0) {
+  console.error("    ✗ No profile files found in profiles/");
+  errors++;
+} else {
+  for (const prof of profiles) {
+    if (existsSync(prof.path)) {
+      console.log(`    ✓ ${prof.file}`);
+    } else {
+      console.error(`    ✗ MISSING: ${prof.file}`);
+      errors++;
+    }
+  }
+}
+console.log();
+
+// 6. Dry Typst compiles across discovered applications
 console.log("  [Typst Syntax & Template Integrity]");
 const testSuites = [];
 
@@ -119,9 +138,21 @@ for (const { app, layout, path } of testSuites) {
 
 console.log();
 
-if (errors === 0) {
-  console.log("✓ Lint passed — all content, projects, applications, and layout templates are present and valid.");
-} else {
-  console.error(`✗ Lint failed — ${errors} error(s) found.`);
+if (errors > 0) {
+  console.error(`✗ Structural lint failed — ${errors} error(s) found.`);
   process.exit(1);
 }
+
+// 7. Run Semantic Schema Validation and Skill-to-Evidence Verification
+try {
+  execSync(`node "${resolve(root, "scripts/validate.js")}"`, {
+    stdio: "inherit",
+    cwd: root,
+  });
+} catch (err) {
+  console.error(`✗ Semantic validation failed.`);
+  process.exit(1);
+}
+
+console.log("\n✓ All lint and semantic validation checks passed successfully.");
+

@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-and-build:
+    name: Validate, Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Set up Typst
+        uses: typst-community/setup-typst@v4
+        with:
+          typst-version: "latest"
+
+      - name: Run semantic validation
+        run: pnpm validate
+
+      - name: Run linter
+        run: pnpm lint
+
+      - name: Build production resumes
+        run: pnpm build
+
+      - name: Verify production outputs
+        run: |
+          node --input-type=module -e "
+          import { readdirSync } from 'fs';
+          const files = readdirSync('output').filter(f => f.endsWith('.pdf'));
+          const expected = ['Mohamed_Seoudy_Frontend_Engineer.pdf', 'Mohamed_Seoudy_Software_Engineer.pdf'];
+          if (files.length !== 2 || !expected.every(f => files.includes(f))) {
+            console.error('Expected exactly 2 production PDFs, found:', files);
+            process.exit(1);
+          }
+          console.log('✓ Exactly 2 canonical production PDFs present in output/:', files.join(', '));
+          "
+
+      - name: Run integrity tests
+        run: pnpm test
+
+      - name: Run ATS compatibility checks
+        run: pnpm test:ats
+
+      - name: Upload production resumes
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: production-resumes
+          path: output/*.pdf
+          if-no-files-found: error

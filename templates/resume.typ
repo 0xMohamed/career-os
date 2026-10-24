@@ -15,13 +15,13 @@
 #import "layouts/standard.typ": render-standard
 #import "layouts/classic.typ": render-classic
 
-#let resume-template(app, layout: "editorial") = {
+#let resume-template(app, layout: "classic") = {
   let p = app.profile
 
   // Layout resolution priority:
   // 1. CLI input: --input layout=<name>
   // 2. Application dictionary: app.layout
-  // 3. Template argument: layout (default: "editorial")
+  // 3. Template argument: layout (default: "classic")
   let raw-layout = if "layout" in sys.inputs {
     sys.inputs.at("layout")
   } else if "layout" in app and app.layout != none and app.layout != "" {
@@ -30,12 +30,12 @@
     layout
   }
 
-  let selected-layout = if raw-layout in ("classic", "traditional", "conservative", "minimal") {
-    "classic"
+  let selected-layout = if raw-layout in ("editorial", "two-column", "magazine") {
+    "editorial"
   } else if raw-layout in ("standard", "one-column", "single-column", "single", "1-column") {
     "standard"
   } else {
-    "editorial"
+    "classic"
   }
 
   set document(
@@ -93,11 +93,16 @@
 
   // ── Helper: bullet item ─────────────────────────────────────────────
   let bullet(content) = {
+    let text-content = if type(content) == dictionary and "statement" in content {
+      content.statement
+    } else {
+      content
+    }
     grid(
       columns: (5.5pt, 1fr),
       gutter: 2pt,
       text(fill: color-muted, size: size-body)[•],
-      text(size: size-body, fill: color-ink)[#content],
+      text(size: size-body, fill: color-ink)[#text-content],
     )
     v(space-tight)
   }

@@ -41,11 +41,16 @@
 
   // ── Traditional Bullet Item ──────────────────────────────────────────
   let classic-bullet(content) = [
+    #let text-content = if type(content) == dictionary and "statement" in content {
+      content.statement
+    } else {
+      content
+    }
     #grid(
       columns: (6pt, 1fr),
       gutter: 2pt,
       text(fill: color-ink, size: size-body)[•],
-      text(size: size-body, fill: color-ink)[#content],
+      text(size: size-body, fill: color-ink)[#text-content],
     )
     #v(space-tight)
   ]
@@ -149,7 +154,18 @@
     // ── PROJECTS ─────────────────────────────────────────────────────
     #if "projects" in app and app.projects != none and app.projects.len() > 0 [
       #classic-heading("Projects")
+      #let continuation-idx = if "projects_continuation_index" in app and app.projects_continuation_index != none {
+        app.projects_continuation_index
+      } else if app.projects.len() > 2 {
+        2
+      } else {
+        none
+      }
       #for (i, proj) in app.projects.enumerate() [
+        #if continuation-idx != none and i == continuation-idx [
+          #pagebreak()
+          #classic-heading("Projects (continued)")
+        ]
         #block(breakable: false)[
           #let target-link = if "links" in proj and proj.links != none {
             if "live" in proj.links and proj.links.live != none and proj.links.live != "" {
@@ -183,11 +199,18 @@
             proj-meta-block,
           )
           #v(space-tight)
-          #let top-achievements = proj.achievements.slice(0, calc.min(2, proj.achievements.len()))
+          #let max-bullets = if "limit" in proj and proj.limit != none {
+            proj.limit
+          } else if "max_project_achievements" in app and app.max_project_achievements != none {
+            app.max_project_achievements
+          } else {
+            proj.achievements.len()
+          }
+          #let top-achievements = proj.achievements.slice(0, calc.min(max-bullets, proj.achievements.len()))
           #for bullet-item in top-achievements [
             #classic-bullet(bullet-item)
           ]
-          #if i < app.projects.len() - 1 [
+          #if i < app.projects.len() - 1 and (continuation-idx == none or i != continuation-idx - 1) [
             #dotted-divider()
           ]
         ]
@@ -215,41 +238,36 @@
       ]
     ]
 
-    // ── EDUCATION & LANGUAGES ────────────────────────────────────────
-    #grid(
-      columns: (1fr, 1fr),
-      gutter: 20pt,
-      [
-        #if "education" in app and app.education != none and app.education.len() > 0 [
-          #classic-heading("Education")
-          #for entry in app.education [
-            #block(breakable: false)[
-              #text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#entry.degree] \
-              #v(1pt)
-              #text(font: font-sans, size: size-body, weight: "semibold", fill: color-secondary)[#entry.institution] \
-              #v(1pt)
-              #text(font: font-sans, size: size-meta, fill: color-muted)[#entry.period]
-              #v(space-entry)
-            ]
+    // ── EDUCATION ────────────────────────────────────────────────────
+    #if "education" in app and app.education != none and app.education.len() > 0 [
+      #classic-heading("Education")
+      #for entry in app.education [
+        #block(breakable: false)[
+          #let ed-title-block = [
+            #text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#entry.degree]
+            #h(4pt)
+            #text(font: font-sans, size: size-title, weight: "medium", fill: color-secondary)[· #entry.institution]
           ]
-        ]
-      ],
-      [
-        #if "languages" in app and app.languages != none and app.languages.len() > 0 [
-          #classic-heading("Languages")
-          #for (i, lang) in app.languages.enumerate() [
-            #block(breakable: false)[
-              #text(font: font-sans, size: size-body, weight: "bold", fill: color-ink)[#lang.name]
-              #h(4pt)
-              #text(font: font-sans, size: size-small, fill: color-muted)[· #lang.level]
-              #if i < app.languages.len() - 1 [
-                #v(space-tight)
-              ]
-            ]
-          ]
+          #let ed-meta-block = text(font: font-sans, size: size-meta, fill: color-muted)[#entry.period]
+          #grid(
+            columns: (1fr, auto),
+            gutter: 8pt,
+            align: (left + horizon, right + horizon),
+            ed-title-block,
+            ed-meta-block,
+          )
         ]
       ]
-    )
+    ]
+
+    // ── LANGUAGES ────────────────────────────────────────────────────
+    #if "languages" in app and app.languages != none and app.languages.len() > 0 [
+      #classic-heading("Languages")
+      #block(breakable: false)[
+        #let lang-str = app.languages.map(l => l.name + " (" + l.level + ")").join("   ·   ")
+        #text(font: font-sans, size: size-body, fill: color-secondary)[#lang-str]
+      ]
+    ]
   ]
 
   body
