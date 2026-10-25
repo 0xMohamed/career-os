@@ -14,7 +14,7 @@
   period:     "2026 — Present",
   team_size:  "Solo",
 
-  summary:    "Modular headless document engine and visual storytelling platform (in active development).",
+  summary:    "A document platform under active development with a Studio for authoring, a server-rendered public viewer, and an API layer.",
 
   technologies: (
     "TypeScript", "React", "TanStack Start", "Turborepo",
@@ -25,27 +25,27 @@
   achievements: (
     (
       id: "document-engine",
-      statement: "Architected a headless Document Engine across an 11-package Turborepo monorepo, enforcing deterministic mutations via command-driven domain aggregates and shared TypeScript contracts.",
+      statement: "Defined shared TypeScript contracts and Zod schemas for document nodes and commands, keeping data structures consistent across the authoring app, API, and viewer.",
       method: "Implemented Domain-Driven Design bounded contexts decoupling administrative Project metadata from Document composition, validated by Zod contracts.",
       outcome: "Established clean package separation between authoring Studio editor workflows, headless API services, and a Server-Driven UI document runtime for public SSR Viewer presentation.",
       metric: "11 monorepo packages across apps/ and packages/",
       evidence: "packages/domain/DOMAIN_MODEL.md, docs/architecture/platform-architecture.md & packages/render/src/node-renderer.tsx",
-      skills: ("TypeScript", "Server-Driven UI", "Component Architecture", "Monorepos", "Turborepo", "Zod", "React", "Hono"),
+      skills: ("TypeScript", "Server-Driven UI", "Component Architecture", "Monorepos", "Turborepo", "pnpm Workspaces", "Zod", "React", "Hono"),
       tags: ("architecture", "contracts", "backend", "monorepo"),
     ),
     (
       id: "testing-automation",
-      statement: "Implemented a multi-tier test architecture comprising 81 Vitest test suites and 3 Playwright end-to-end Critical User Journeys (CUJs) across Studio and Viewer applications.",
+      statement: "Established automated test coverage with 81 Vitest test suites and 3 Playwright end-to-end journeys across Studio and Viewer.",
       method: "Authored isolated unit test suites for layout math and schema validators alongside browser-level integration tests covering canvas hydration and sticky storytelling.",
       outcome: "Established automated regression coverage across document engine commands, layout recalculations, and server-side rendering pipelines.",
-      metric: "81 Vitest test suites, 3 Playwright CUJs",
+      metric: "81 Vitest test suites, 3 Playwright CUJs, GitHub Actions CI",
       evidence: "summa/docs/architecture/TESTING_CONVENTIONS.md & e2e/*.spec.ts",
-      skills: ("Vitest", "Playwright", "TypeScript", "Engineering Practices"),
+      skills: ("Vitest", "Playwright", "GitHub Actions", "Docker", "Architecture & Engineering"),
       tags: ("testing", "engineering-practices", "quality", "fullstack"),
     ),
     (
       id: "layout-engine",
-      statement: "Engineered a Track-and-Band layout engine and modular UI workspace utilizing React, TypeScript, CSS Container Queries, and shadcn/ui accessible primitives.",
+      statement: "Developed a Track-and-Band layout engine and modular UI workspace utilizing React, TypeScript, CSS Container Queries, and shadcn/ui accessible primitives.",
       method: "Implemented layout calculations using CSS Container Queries (cqi), an event-driven Trigger-to-Reaction pipeline, and composed shadcn/ui dock panels.",
       outcome: "Enabled responsive multi-column canvas reflow and unified spatial interaction models across authoring and viewer runtimes.",
       metric: "Container-query based geometry reflow with shadcn/ui primitives",

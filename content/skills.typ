@@ -30,6 +30,7 @@
     items: (
       "React",
       "Next.js",
+      "Astro",
       "SolidJS",
       "TanStack Start",
       "TanStack Router",
@@ -67,6 +68,7 @@
     items: (
       "D3.js",
       "Visx",
+      "p5.js",
       "Canvas API",
       "SVG",
       "Mapbox GL",
@@ -82,6 +84,7 @@
       "Fastify",
       "Express",
       "REST APIs",
+      "SQL",
       "PostgreSQL",
       "Prisma",
     ),
@@ -90,7 +93,6 @@
   (
     category: "AI & LLM Integration",
     items: (
-      "Google Gemini",
       "Structured Outputs",
       "Multimodal AI",
       "AI Workflows",
@@ -100,7 +102,7 @@
   ),
 
   (
-    category: "Engineering Practices",
+    category: "Architecture & Engineering",
     items: (
       "Component Architecture",
       "Server-Driven UI",
@@ -120,9 +122,9 @@
       "Storybook",
       "Vite",
       "Turborepo",
-      "Git",
-      "pnpm",
-      "ESLint",
+      "pnpm Workspaces",
+      "GitHub Actions",
+      "Docker",
     ),
   ),
 )
@@ -133,6 +135,9 @@
     "Backend": "Backend & Data",
     "Tooling": "Testing & Tooling",
     "Testing": "Testing & Tooling",
+    "Engineering": "Architecture & Engineering",
+    "Engineering Practices": "Architecture & Engineering",
+    "Architecture": "Architecture & Engineering",
     "State Management": "State, Data Fetching & Validation",
     "Server State & Data Fetching": "State, Data Fetching & Validation",
     "State & Data Architecture": "State, Data Fetching & Validation",

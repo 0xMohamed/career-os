@@ -14,7 +14,7 @@
   period:      "2025",
   team_size:   "1–3",
 
-  summary:     "Modular ambient desktop dashboard and widget engine.",
+  summary:     "A StandBy-inspired dashboard that turns idle large displays into configurable widget workspaces.",
 
   technologies: (
     "Next.js", "React", "TypeScript", "Jotai",
@@ -24,7 +24,7 @@
   achievements: (
     (
       id: "widget-registry",
-      statement: "Architected a declarative widget registry and typed schema system, auto-generating dynamic configuration panels for registered widgets with live property binding.",
+      statement: "Built a widget registry that lets users add, arrange, resize, and reorder widgets in a shared grid, with separate edit and display modes.",
       method: "Defined a typed WidgetDefinition contract with a declarative settingsSchema (text, number, toggle, select, color), automatically projecting form controls into Jotai state.",
       outcome: "Decoupled widget development from configuration UI authoring, allowing new modular widgets to be integrated solely through their schema contract.",
       metric: "Declarative widget registry with schema-driven configuration panels",
@@ -34,7 +34,7 @@
     ),
     (
       id: "dom-reparenting",
-      statement: "Engineered DOM reparenting for fullscreen widget overlays, preventing component unmounting or internal state reset during viewport transitions.",
+      statement: "Used React portals to show widgets in a fullscreen layer without unmounting them, preserving running timers and widget state during transitions.",
       method: "Implemented targeted stage teleportation using React portals and Jotai atoms (maximizedWidgetIdAtom), preserving active timers and canvas elements.",
       outcome: "Preserved internal component state and timer execution across fullscreen modal transitions.",
       metric: "DOM portal reparenting without unmounting active widgets",

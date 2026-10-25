@@ -14,7 +14,7 @@
   period:      "2025",
   team_size:   "Solo",
 
-  summary:     "Real-time global cargo simulation and interactive tracking dashboard.",
+  summary:     "An interactive logistics prototype visualizing vessel routes and cargo placement.",
 
   technologies: (
     "SolidJS", "TypeScript", "Vite", "D3.js",
@@ -24,7 +24,7 @@
   achievements: (
     (
       id: "globe-projection",
-      statement: "Built an interactive orthographic globe visualization using D3.js and TopoJSON, rendering spherical geography through a layered SVG and Canvas architecture.",
+      statement: "Built an interactive logistics visualization with a D3 orthographic globe rendered through SVG and Canvas, displaying simulated vessel movement between six ports.",
       method: "Rendered base landmass polygons and graticule lines via D3 geoOrthographic SVG paths while overlaying an HTML5 Canvas for vessel markers, applying geodesic distance calculations (geoDistance > 1.57) to clip markers on the far hemisphere.",
       outcome: "Delivered responsive drag-to-rotate and zoom navigation across 2D spherical projections with pointer-tracked cargo inspections.",
       metric: "Layered SVG/Canvas rendering with far-hemisphere visibility clipping",
@@ -34,7 +34,7 @@
     ),
     (
       id: "vessel-telemetry",
-      statement: "Implemented an event-driven client-side cargo transit simulation, calculating geodesic vessel movement across international shipping routes.",
+      statement: "Added a container-bay interface with a 40-slot layout and three-tier stacking rules, allowing users to place and inspect simulated cargo.",
       method: "Engineered periodic coordinate progression using haversine distance and step vectors between six major ports, broadcasting state updates to SolidJS reactive stores at 3-second intervals.",
       outcome: "Simulated transit progress, estimated arrival times, and status transitions without external API dependencies or backend polling overhead.",
       metric: "Client-side geodesic simulation across 6 international shipping ports",

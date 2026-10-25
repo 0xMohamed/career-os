@@ -382,6 +382,24 @@ for (const pdfName of targetPdfNames) {
   );
   if (verbose) console.log();
 
+  if (verbose) {
+    console.log("6. ATS Parser Heuristic & Glued-Word Anomaly Audit");
+  }
+  // Audits tokens against naive table-flattening heuristics used by external scanners (e.g. ATS Verification):
+  // Flag any uppercase acronyms directly concatenated with lowercase/titlecase letters, excluding whitelisted terms like 'APIs'.
+  const tokens = fullText.split(/[\s,·•|()—–:;/\\]+/).filter(Boolean);
+  const WHITELISTED_ACRONYMS = new Set(["APIs"]);
+  const suspiciousGluedWords = tokens.filter(
+    (t) => /[A-Z]{2,}[a-z]/.test(t) && !WHITELISTED_ACRONYMS.has(t),
+  );
+  assertCheck(
+    "Glued Words",
+    "No glued words or flattened table anomalies",
+    suspiciousGluedWords.length === 0,
+    suspiciousGluedWords.length > 0 ? `found: ${suspiciousGluedWords.join(", ")}` : "",
+  );
+  if (verbose) console.log();
+
   perFileResults.push({
     pdfName,
     passed,

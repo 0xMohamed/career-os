@@ -244,9 +244,9 @@
       #for entry in app.education [
         #block(breakable: false)[
           #let ed-title-block = [
-            #text(font: font-sans, size: size-title, weight: "bold", fill: color-ink)[#entry.degree]
+            #text(font: font-sans, size: size-body, weight: "bold", fill: color-secondary)[#entry.degree]
             #h(4pt)
-            #text(font: font-sans, size: size-title, weight: "medium", fill: color-secondary)[· #entry.institution]
+            #text(font: font-sans, size: size-meta, weight: "regular", fill: color-muted)[· #entry.institution]
           ]
           #let ed-meta-block = text(font: font-sans, size: size-meta, fill: color-muted)[#entry.period]
           #grid(

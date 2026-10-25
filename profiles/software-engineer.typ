@@ -27,7 +27,7 @@
 // Base Software Engineer Profile Definition
 #let software-engineer-profile-info = (
   title: "Software Engineer",
-  tagline: "Software Engineer | TypeScript • Node.js • React | APIs & Application Architecture",
+  tagline: "Software Engineer | TypeScript • Node.js • React | Full-Stack & Application Architecture",
   summary: career-direction.targeted_summaries.software_engineer,
 )
 
@@ -41,7 +41,7 @@
   ),
   select-experience(
     experience.at(1),
-    ids: ("lintu-stewardship", "lintu-loading", "lintu-standards"),
+    ids: ("lintu-stewardship", "lintu-loading", "lintu-composite-chart"),
     limit: 3,
   ),
   select-experience(
@@ -67,9 +67,9 @@
   get-skill-category("Languages"),
   get-skill-category("Backend & Data", label: label-overrides.at("Backend & Data", default: "Backend & Data")),
   get-skill-category("State, Data Fetching & Validation", label: label-overrides.at("State, Data Fetching & Validation", default: "State, Data & Validation")),
-  get-skill-category("Frontend", items: ("React", "Next.js", "SolidJS", "TanStack Start", "TanStack Router")),
-  get-skill-category("Testing & Tooling", label: label-overrides.at("Testing & Tooling", default: "Testing & Tooling")),
-  get-skill-category("Engineering Practices", label: label-overrides.at("Engineering Practices", default: "Engineering Practices"), items: ("Component Architecture", "Server-Driven UI", "Performance Optimization", "Monorepos", "Algorithms", "Web Accessibility")),
+  get-skill-category("Frontend", items: ("React", "Next.js", "Astro", "SolidJS", "TanStack Start", "TanStack Router")),
+  get-skill-category("Testing & Tooling", label: label-overrides.at("Testing & Tooling", default: "Testing & Tooling"), items: ("Vitest", "Playwright", "Git", "Vite", "Turborepo", "pnpm Workspaces", "GitHub Actions", "Docker")),
+  get-skill-category("Engineering Practices", label: label-overrides.at("Engineering Practices", default: "Architecture & Engineering"), items: ("OOP", "Modular Architecture", "Component Architecture", "Server-Driven UI", "Performance Optimization", "Monorepos", "Algorithms", "Web Accessibility")),
   get-skill-category("AI & LLM Integration", label: label-overrides.at("AI & LLM Integration", default: "AI Integration")),
   get-skill-category("Data Visualization"),
   get-skill-category("Styling & UI", items: ("Design Systems", "Tailwind CSS", "shadcn/ui", "CSS Modules", "Responsive Design")),

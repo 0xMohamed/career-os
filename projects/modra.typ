@@ -14,7 +14,7 @@
   period:     "2026",
   team_size:  "Solo",
 
-  summary:    "AI-powered presentation platform with modular canvas editing.",
+  summary:    "A presentation editor for structured slides, visualizations, and LLM-assisted generation.",
 
   technologies: (
     "React", "TypeScript", "TanStack Router", "Zustand",
@@ -25,7 +25,7 @@
   achievements: (
     (
       id: "shared-contracts",
-      statement: "Architected the @modra/ai-contracts shared monorepo package with strict Zod schemas, validating AI generation payloads and discriminated-union chart blocks between the React client and Express backend.",
+      statement: "Integrated an LLM-based content-generation workflow into a React presentation editor through an Express API, using shared Zod contracts to validate generated slide and chart blocks before rendering.",
       method: "Centralized payload schemas in a shared library enforcing parameter limits (1–20 slides, tone enum, chart density) and strict output types for chart blocks and slide structures.",
       outcome: "Enforced compile-time and runtime type validation between the TanStack Router web application and Express backend services.",
       metric: "Shared monorepo contracts package covering request/response schemas",
@@ -35,7 +35,7 @@
     ),
     (
       id: "document-persistence",
-      statement: "Built RESTful document and template services in Express with Prisma and PostgreSQL, supporting JSON slide snapshot persistence, pagination, and token-based public sharing.",
+      statement: "Developed REST API document and template services in Express with Prisma and PostgreSQL, supporting JSON slide snapshot persistence, pagination, and token-based public sharing.",
       method: "Implemented route controllers with Zod validation middleware, database querying via Prisma ORM with PostgreSQL, and Cloudflare R2 asset storage for slide thumbnails.",
       outcome: "Enabled secure document CRUD operations, immutable snapshot versioning, and public read-only link access.",
       metric: "Express REST API with Prisma PostgreSQL persistence and R2 storage",
@@ -45,7 +45,7 @@
     ),
     (
       id: "ai-hydration",
-      statement: "Implemented asynchronous AI image hydration workflows utilizing transient pending states in Zustand, maintaining UI responsiveness while background generation completes.",
+      statement: "Integrated asynchronous AI image hydration workflows utilizing transient pending states in Zustand, maintaining UI responsiveness while background generation completes.",
       method: "Structured optimistic state transitions with background polling and fallback rendering while waiting for remote generation jobs to resolve.",
       outcome: "Prevented UI blocking during multi-second image generation tasks, providing visual progress feedback to the user.",
       metric: "Non-blocking optimistic UI with transient state handling",
@@ -55,7 +55,7 @@
     ),
     (
       id: "dual-shells",
-      statement: "Engineered dual presentation shells using custom breakpoint hooks (useIsMobile) and shadcn/ui components, routing desktop users to a multi-rail editor and mobile users to a touch slide pager.",
+      statement: "Kept slides at a consistent canvas size on mobile and added zoom controls, allowing users to inspect the full slide instead of reflowing it into a vertical layout.",
       method: "Implemented viewport detection logic (768px breakpoint) combined with shadcn/ui sheet/dialog overlays, dynamically mounting either a desktop multi-panel workspace or MobilePresentationShell.",
       outcome: "Delivered device-appropriate slide authoring and presentation experiences across varied viewport form factors.",
       metric: "Dedicated mobile presentation shell and touch slide pager",

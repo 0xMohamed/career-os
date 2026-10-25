@@ -14,7 +14,7 @@
   period:      "2026",
   team_size:   "Solo",
 
-  summary:     "Interactive lineage graph visualization of historical prophet genealogy.",
+  summary:     "An Arabic-English educational tool for exploring prophets' lineage and chronology.",
 
   technologies: (
     "React", "TypeScript", "TanStack Start", "TanStack Router",
@@ -24,7 +24,7 @@
   achievements: (
     (
       id: "force-canvas",
-      statement: "Engineered an interactive educational graph visualizing historical prophet lineages (28 nodes) using D3 force simulation on an HTML5 canvas viewport.",
+      statement: "Built an Arabic/English educational tool with lineage-tree and chronological views for exploring relationships among prophets.",
       method: "Combined D3 force physics directly with an HTML5 canvas rendering loop, maintaining smooth camera zoom, pan, and real-time hovered ancestor/descendant lineage tracing.",
       outcome: "Delivered responsive educational graph exploration with interactive node selection, timeline era filtering, and bilingual Arabic/English naming.",
       metric: "Interactive 28-node genealogical graph with ancestor/descendant path tracing",
@@ -34,7 +34,7 @@
     ),
     (
       id: "lineage-traversal",
-      statement: "Engineered bidirectional graph traversal algorithms (BFS) and cycle validation, enabling interactive ancestor/descendant lineage path discovery and hierarchy depth computation.",
+      statement: "Implemented lineage traversal and cycle checks, with responsive navigation between profiles and related figures on desktop and mobile.",
       method: "Implemented forward and backward link traversal algorithms with depth calculation for generational layout stratification and cycle detection to guarantee tree validity.",
       outcome: "Provided real-time visual path highlighting across historical prophet lineages with verified referential integrity.",
       metric: "Bidirectional BFS graph traversal with cycle and referential validation",

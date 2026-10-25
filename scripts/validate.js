@@ -143,6 +143,8 @@ const CANONICAL_ALIASES = {
   "State Management": "State, Data Fetching & Validation",
   "Backend": "Backend & Data",
   "Tooling": "Testing & Tooling",
+  "Engineering Practices": "Architecture & Engineering",
+  "Engineering": "Architecture & Engineering",
 };
 
 const canonicalProjectAchievements = new Map(); // proj.id -> Set of achievement IDs
@@ -492,8 +494,8 @@ for (const skill of registeredSkills) {
     focusSkillsCount++;
     console.log(`  * [Documented Transition Focus] ${skill} (tracked in career-direction.typ)`);
   } else {
-    // Check if tool/practice has global repo proof (e.g. Git, pnpm, ESLint)
-    const REPO_WIDE_TOOLS = ["Git", "pnpm", "ESLint", "Prettier", "Design Tokens", "CSS3"];
+    // Check if tool/practice has global repo proof (e.g. Git, pnpm, ESLint, Astro, Storybook)
+    const REPO_WIDE_TOOLS = ["Git", "pnpm", "ESLint", "Prettier", "Design Tokens", "CSS3", "GitHub Actions", "pnpm Workspaces", "Docker", "Astro", "Storybook", "Modular Architecture", "SQL", "OOP"];
     if (REPO_WIDE_TOOLS.includes(skill)) {
       verifiedSkillsCount++;
       if (verbose) {

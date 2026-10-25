@@ -33,15 +33,15 @@
 // Default Frontend Experience Selection (explicit canonical IDs)
 #let default-frontend-experience = (
   select-experience(experience.at(0), ids: ("summa-leadership", "summa-frontend", "summa-testing"), limit: 3),
-  select-experience(experience.at(1), ids: ("lintu-stewardship", "lintu-loading", "lintu-standards"), limit: 3),
+  select-experience(experience.at(1), ids: ("lintu-stewardship", "lintu-loading", "lintu-composite-chart"), limit: 3),
   select-experience(experience.at(2), ids: ("mvp-prototyping", "csv-parsing"), limit: 2),
 )
 
 // Default Frontend Project Priority Ordering & Explicit ID Selection
 // Ordering: 1. Lintu, 2. Modra, 3. Deskby, 4. Basira, 5. Cargo Lab, 6. Oqel
 #let default-frontend-projects = (
-  select-achievements(lintu, ids: ("editor-arch", "composite-chart", "extensible-nodes"), limit: 3),
-  select-achievements(modra, ids: ("ai-hydration", "dual-shells"), limit: 2),
+  select-achievements(lintu, ids: ("editor-arch", "composite-chart"), limit: 2),
+  select-achievements(modra, ids: ("shared-contracts", "dual-shells"), limit: 2),
   select-achievements(deskby, ids: ("widget-registry", "dom-reparenting"), limit: 2),
   select-achievements(basira, ids: ("force-canvas", "a11y-seo"), limit: 2),
   select-achievements(cargolab, ids: ("globe-projection", "vessel-telemetry"), limit: 2),
@@ -54,7 +54,7 @@
   get-skill-category("State, Data Fetching & Validation", label: label-overrides.at("State, Data Fetching & Validation", default: "State, Data & Validation")),
   get-skill-category("Styling & UI", items: ("Tailwind CSS", "shadcn/ui", "CSS Modules", "Design Systems", "Responsive Design")),
   get-skill-category("Data Visualization"),
-  get-skill-category("Engineering Practices", label: label-overrides.at("Engineering Practices", default: "Engineering"), items: ("Component Architecture", "Server-Driven UI", "Performance Optimization", "Web Accessibility", "Cross-Browser Compatibility", "Monorepos")),
+  get-skill-category("Engineering Practices", label: label-overrides.at("Engineering Practices", default: "Architecture & Engineering"), items: ("Component Architecture", "Server-Driven UI", "Performance Optimization", "Web Accessibility", "Monorepos")),
   get-skill-category("Testing & Tooling", label: label-overrides.at("Testing & Tooling", default: "Tooling & Testing")),
   get-skill-category("Backend & Data", label: label-overrides.at("Backend & Data", default: "Backend")),
   get-skill-category("AI & LLM Integration", label: label-overrides.at("AI & LLM Integration", default: "AI")),
